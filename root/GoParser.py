@@ -49,6 +49,25 @@ class GoParser:
                     result_set.append(("function", line[:-2], comment_queue))
                 elif self.first_word(line) == "package":
                     result_set.append(("package", line, comment_queue))
+                elif self.first_word(line) == "const":
+                    if self.second_word(line) == "(":
+                        pass
+                    else:
+                        result_set.append(("constant", line, comment_queue))
+                elif self.first_word(line) == "var":
+                    if self.second_word(line) == "(":
+                        pass
+                    else:
+                        result_set.append(("variable", line, comment_queue))
+                elif self.first_word(line) == "import":
+                    import_set = []
+                    j = i + 1
+                    sub_line = lines[j]
+                    while sub_line.strip() != ")":
+                        import_set.append(sub_line.strip())
+                        j += 1
+                        sub_line = lines[j]
+                    result_set.append(("imports", import_set))
 
                 comment_queue = []
 
@@ -77,3 +96,6 @@ class GoParser:
 
     def first_word(self, line):
         return line.split(' ', 1)[0]
+
+    def second_word(self, line):
+        return line.split(' ', 1)[1]
