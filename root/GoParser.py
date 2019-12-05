@@ -6,7 +6,12 @@ class GoParser:
 
     def start_folder(self, input_folder_path, destination_folder_path):
         prefix_ind = len(input_folder_path.split('/')) - 1
-        self.go_throw_directory(input_folder_path, destination_folder_path, prefix_ind)
+        os.makedirs(destination_folder_path)
+        file_list = self.go_throw_directory(input_folder_path, destination_folder_path, prefix_ind)
+
+        for i in file_list:
+            print(i)
+
         pass
 
     def start_file(self, input_file_path, destination_file_path):
@@ -21,14 +26,33 @@ class GoParser:
         return [i for i, letter in enumerate(in_string) if letter == char_val]
 
     def go_throw_directory(self, current_path, destination_folder_path, prefix_ind):
+        new_folder_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[1]:]
+        os.makedirs(new_folder_path)
+        f = open(new_folder_path + "/readme.txt.html", "a+")
+        f.close()
+
         node_list = os.listdir(current_path)
+        nested_items = []
         for i in node_list:
             node = current_path + "/" + i
             if os.path.isfile(node):
-                new_file_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[1]:] + "/" + node.split('/')[-1]
+                new_file_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[1]:] + "/" + node.split('/')[-1] + ".html"
+                nested_items.append(new_file_path)
+                f = open(new_file_path, "a+")
+                f.close()
             elif os.path.isdir(node):
-                new_folder_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[1]:] + "/" + node.split('/')[-1]
-                self.go_throw_directory(node, destination_folder_path, prefix_ind)
+                nested_files = self.go_throw_directory(node, destination_folder_path, prefix_ind)
+                f = open(new_folder_path + "/readme.txt.html", "a+")
+                for j in nested_files:
+                    f.write(j + "\n")
+                f.close()
+                nested_items = nested_items + nested_files
+        if "readme.txt" not in node_list:
+            f = open(new_folder_path + "/readme.txt.html", "a+")
+            nested_items.append(new_folder_path + "/readme.txt.html")
+            f.close()
+        return nested_items
+
 
     # Parsing
 
