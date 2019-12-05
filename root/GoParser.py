@@ -5,7 +5,8 @@ class GoParser:
     # Global
 
     def start_folder(self, input_folder_path, destination_folder_path):
-        # print(os.listdir(input_folder))
+        prefix_ind = len(input_folder_path.split('/')) - 1
+        self.go_throw_directory(input_folder_path, destination_folder_path, prefix_ind)
         pass
 
     def start_file(self, input_file_path, destination_file_path):
@@ -15,7 +16,22 @@ class GoParser:
         input_file.close()
         pass
 
-    # Local
+    # Directory handling
+    def char_occur(self, in_string, char_val):
+        return [i for i, letter in enumerate(in_string) if letter == char_val]
+
+    def go_throw_directory(self, current_path, destination_folder_path, prefix_ind):
+        node_list = os.listdir(current_path)
+        for i in node_list:
+            node = current_path + "/" + i
+            if os.path.isfile(node):
+                new_file_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[1]:] + "/" + node.split('/')[-1]
+            elif os.path.isdir(node):
+                new_folder_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[1]:] + "/" + node.split('/')[-1]
+                self.go_throw_directory(node, destination_folder_path, prefix_ind)
+
+    # Parsing
+
     def parse_file(self, file):
         # Result
         result_set = []
@@ -103,6 +119,7 @@ class GoParser:
         return len(line) >= 2 and line[0] == line[1] == '/'
 
     long_comment_memory = False
+
     def line_is_long_comment(self, line):
         if line == "/*":
             self.long_comment_memory = True
