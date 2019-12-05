@@ -9,14 +9,13 @@ class GoParser:
         pass
 
     def start_file(self, input_file_path, destination_file_path):
-        input_file = open(input_file_path, 'r')
+        input_file = open(input_file_path, encoding='utf-8', mode='r')
         self.parse_file(input_file)
 
         input_file.close()
         pass
 
     # Local
-
     def parse_file(self, file):
         # Result
         result_set = []
@@ -35,11 +34,18 @@ class GoParser:
 
             if self.line_is_comment(line):
                 comment_queue.append(self.strip_comment_line(line))
-            elif comment_queue:
+            elif self.line_is_long_comment(line):
+                if line != "/*" and line != "*/":
+                    comment_queue.append(line)
+            else:
                 if was_begin and line == "":
                     result_set.append(("File overview", comment_queue))
+                    comment_queue = []
+                    continue
+                if line != "":
                     was_begin = False
-                elif self.first_word(line) == "func":
+
+                if self.first_word(line) == "func":
                     result_set.append(("function", line[:-2], comment_queue))
                 elif self.first_word(line) == "package":
                     result_set.append(("package", line, comment_queue))
@@ -51,6 +57,16 @@ class GoParser:
 
     def line_is_comment(self, line):
         return len(line) >= 2 and line[0] == line[1] == '/'
+
+    long_comment_memory = False
+    def line_is_long_comment(self, line):
+        if line == "/*":
+            self.long_comment_memory = True
+            return True
+        elif line == "*/":
+            self.long_comment_memory = False
+            return True
+        return self.long_comment_memory
 
     def strip_comment_line(self, line):
         if len(line) < 3:
