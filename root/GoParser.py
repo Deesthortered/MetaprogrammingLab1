@@ -46,19 +46,44 @@ class GoParser:
                     was_begin = False
 
                 if self.first_word(line) == "func":
+                    #
                     result_set.append(("function", line[:-2], comment_queue))
                 elif self.first_word(line) == "package":
+                    #
                     result_set.append(("package", line, comment_queue))
                 elif self.first_word(line) == "const":
                     if self.second_word(line) == "(":
-                        pass
+                        const_set = []
+                        j = i + 1
+                        sub_line = lines[j]
+                        while sub_line.strip() != ")":
+                            const_set.append(sub_line.strip())
+                            j += 1
+                            sub_line = lines[j]
+                        result_set.append(("const_arr", const_set, comment_queue))
                     else:
                         result_set.append(("constant", line, comment_queue))
                 elif self.first_word(line) == "var":
                     if self.second_word(line) == "(":
-                        pass
+                        var_set = []
+                        j = i + 1
+                        sub_line = lines[j]
+                        while sub_line.strip() != ")":
+                            var_set.append(sub_line.strip())
+                            j += 1
+                            sub_line = lines[j]
+                        result_set.append(("variable_arr", var_set, comment_queue))
                     else:
                         result_set.append(("variable", line, comment_queue))
+                elif self.first_word(line) == "type" and line[-1] == "{":
+                    type_set = [line]
+                    j = i + 1
+                    sub_line = lines[j]
+                    while sub_line.strip() != "}":
+                        type_set.append(sub_line.strip())
+                        j += 1
+                        sub_line = lines[j]
+                    result_set.append(("type", type_set, comment_queue))
                 elif self.first_word(line) == "import":
                     import_set = []
                     j = i + 1
