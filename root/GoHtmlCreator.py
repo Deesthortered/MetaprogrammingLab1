@@ -26,7 +26,7 @@ class GoHtmlCreator:
                     overview += line + "\n"
                 overview += '\n\n'
             elif ptoken[0] == 'package':
-                pass
+                package_name = ptoken[2]
             elif ptoken[0] == 'imports':
                 pass
             elif ptoken[0] == 'constant':
@@ -46,6 +46,9 @@ class GoHtmlCreator:
 
             print(ptoken)
 
+        if package_name != None:
+            result_text += self.envelop_package(package_name)
+
         if overview != "":
             result_text += self.envelop_overview(overview)
 
@@ -55,6 +58,18 @@ class GoHtmlCreator:
     #######################
 
     # Local ###############
+    def envelop_package(self, text):
+        before = \
+            """
+            <h1>
+            """
+        after = \
+            """
+            </h1>
+            """
+        text = text[:1].upper() + text[1:]
+        return before + text + after
+
     def envelop_overview(self, text):
         before = \
             """
