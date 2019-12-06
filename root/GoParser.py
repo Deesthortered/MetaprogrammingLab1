@@ -77,7 +77,10 @@ class GoParser:
         type_struct_set = []
         was_begin = True
 
-        for i in range(len(lines)):
+        general_size = len(lines)
+        i = -1
+        while i < general_size-1:
+            i += 1
             dirty_line = lines[i]
             line = dirty_line.strip()
 
@@ -108,6 +111,17 @@ class GoParser:
                     else:
                         func_title = "func " + self.second_word(line)[:self.char_occur(self.second_word(line), '(')[0]]
                         result_set.append(("function", None, func_title, line[:self.char_occur(line, '{')[0]-1], comment_queue))
+
+                    bracers_count = 0
+                    bracers_count += len(self.char_occur(line, '{'))
+                    bracers_count -= len(self.char_occur(line, '}'))
+                    while bracers_count != 0:
+                        i += 1
+                        dirty_line = lines[i]
+                        line = dirty_line.strip()
+                        bracers_count += len(self.char_occur(line, '{'))
+                        bracers_count -= len(self.char_occur(line, '}'))
+
                 elif self.first_word(line) == "package":
                     #
                     result_set.append(("package", None, line, line, comment_queue))
