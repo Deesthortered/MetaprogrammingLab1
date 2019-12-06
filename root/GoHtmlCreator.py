@@ -64,9 +64,7 @@ class GoHtmlCreator:
                 else:
                     func_list.append(ptoken)
 
-            print(ptoken)
-
-        if package_name != None:
+        if package_name is not None:
             result_text += self.envelop_package(package_name)
 
         if import_list:
@@ -216,7 +214,34 @@ class GoHtmlCreator:
         return before + content + after
 
     def envelop_commented_single_consts_vars(self, ptoken):
-        return ""
+        before = \
+            """
+            <div class="alert alert-primary" role="alert"> <h3> Documented """ + ("variable" if ptoken[0] == "variable" else "constant") + """ </h3> </div>
+            <div class="alert alert-light" role="alert">
+            """
+        after = \
+            """
+            </div>
+            """
+
+        content = "<h5>" + ptoken[3] + "</h5>"
+
+        before1 = \
+            """
+            <div class="alert alert-light" role="alert">
+            """
+        after1 = \
+            """
+            </div>
+            """
+
+        content1 = ""
+        for i in ptoken[4]:
+            pref1 = "<p>"
+            post1 = "</p>"
+            content1 += pref1 + i + post1
+
+        return before + content + after + before1 + content1 + after1
 
     def envelop_commented_many_consts_vars(self, ptoken):
         before = \
