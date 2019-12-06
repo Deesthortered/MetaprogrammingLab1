@@ -82,10 +82,12 @@ class GoHtmlCreator:
             result_text += self.envelop_uncommneted_vars(uncommented_vars)
 
         if commented_single_consts_vars:
-            result_text += self.envelop_commented_single_consts_vars(commented_single_consts_vars)
+            for c in commented_single_consts_vars:
+                result_text += self.envelop_commented_single_consts_vars(c)
 
         if commented_many_consts_vars:
-            result_text += self.envelop_commented_many_consts_vars(commented_many_consts_vars)
+            for c in commented_many_consts_vars:
+                result_text += self.envelop_commented_many_consts_vars(c)
 
         if type_list:
             for type in type_list:
@@ -213,11 +215,44 @@ class GoHtmlCreator:
 
         return before + content + after
 
-    def envelop_commented_single_consts_vars(self, token_list):
-        pass
+    def envelop_commented_single_consts_vars(self, ptoken):
+        return ""
 
-    def envelop_commented_many_consts_vars(self, token_list):
-        pass
+    def envelop_commented_many_consts_vars(self, ptoken):
+        before = \
+            """
+            <div class="alert alert-primary" role="alert"> <h3> Documented """ + ("variables" if ptoken[0] == "variable_arr" else "constants") + """ </h3> </div>
+            <div class="alert alert-light" role="alert">
+            """
+        after = \
+            """
+            </div>
+            """
+
+        pref = "<h5>"
+        post = "</h5>"
+        content = ("<h5>var (</h5>" if ptoken[0] == "variable_arr" else "<h5>const (</h5>")
+        for i in ptoken[3]:
+            content += pref + i + post
+        content += "<h5>)</h5>"
+
+        before1 = \
+            """
+            <div class="alert alert-light" role="alert">
+            """
+        after1 = \
+            """
+            </div>
+            """
+
+        content1 = ""
+        for i in ptoken[4]:
+            pref1 = "<p>"
+            post1 = "</p>"
+            content1 += pref1 + i + post1
+
+
+        return before + content + after + before1 + content1 + after1
 
     def envelop_type(self, type):
         before_desc = \
