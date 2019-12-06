@@ -3,7 +3,6 @@ import os
 
 class GoParser:
     # Global
-
     def start_folder(self, input_folder_path, destination_folder_path):
         prefix_ind = len(input_folder_path.split('/')) - 1
         os.makedirs(destination_folder_path)
@@ -21,7 +20,7 @@ class GoParser:
         input_file.close()
         pass
 
-    # Directory handling
+    # Directory handling ##
     def char_occur(self, in_string, char_val):
         return [i for i, letter in enumerate(in_string) if letter == char_val]
 
@@ -37,14 +36,14 @@ class GoParser:
             node = current_path + "/" + i
             if os.path.isfile(node):
                 new_file_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[1]:] + "/" + node.split('/')[-1] + ".html"
-                nested_items.append(new_file_path)
+                nested_items.append((node, new_file_path))
                 f = open(new_file_path, "a+")
                 f.close()
             elif os.path.isdir(node):
                 nested_files = self.go_throw_directory(node, destination_folder_path, prefix_ind)
                 f = open(new_folder_path + "/readme.txt.html", "a+")
                 for j in nested_files:
-                    f.write(j + "\n")
+                    f.write(j[1] + "\n")
                 f.close()
                 nested_items = nested_items + nested_files
         if "readme.txt" not in node_list:
@@ -52,10 +51,9 @@ class GoParser:
             nested_items.append(new_folder_path + "/readme.txt.html")
             f.close()
         return nested_items
+    #######################
 
-
-    # Parsing
-
+    # Parsing #############
     def parse_file(self, file):
         # Result
         result_set = []
@@ -165,3 +163,4 @@ class GoParser:
 
     def second_word(self, line):
         return line.split(' ', 1)[1]
+    #######################
