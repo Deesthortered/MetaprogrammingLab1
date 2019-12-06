@@ -105,5 +105,13 @@ type CustomType struct {
     three string
 }
 
+func typeFunc1(c *CustomType, sep string) (int) {
+    return 0
+}
+
+func typeFunc2(c *CustomType) (int) {
+    return 0
+}
+
 // все, финишь, конец, финито, кончита, зе енд
 var PleaseGiveMeMaxMarkMisterTerletskiy

@@ -74,6 +74,7 @@ class GoParser:
             lines = lines[1:]
 
         comment_queue = []
+        type_struct_set = []
         was_begin = True
 
         for i in range(len(lines)):
@@ -95,8 +96,18 @@ class GoParser:
                     was_begin = False
 
                 if self.first_word(line) == "func":
-                    func_title = self.second_word(line)[:self.char_occur(self.second_word(line), '(')[0]]
-                    result_set.append(("function", None, func_title, line[:-2], comment_queue))
+                    parameter_string = line[self.char_occur(line, '(')[0]:self.char_occur(line, '(')[1]]
+                    first_param = parameter_string[1:-2].split(',')[0]
+                    first_param_type = None
+                    if '*' in first_param:
+                        first_param_type = first_param[self.char_occur(first_param, '*')[0] + 1:]
+
+                    if first_param_type:
+                        func_title = "func (*" + first_param_type + ") " + self.second_word(line)[:self.char_occur(self.second_word(line), '(')[0]]
+                        result_set.append(("function", first_param_type, func_title, line[:-2], comment_queue))
+                    else:
+                        func_title = "func " + self.second_word(line)[:self.char_occur(self.second_word(line), '(')[0]]
+                        result_set.append(("function", None, func_title, line[:-2], comment_queue))
                 elif self.first_word(line) == "package":
                     #
                     result_set.append(("package", None, line, line, comment_queue))
@@ -132,6 +143,7 @@ class GoParser:
                         type_set.append(sub_line.strip())
                         j += 1
                         sub_line = lines[j]
+                    type_struct_set.append(self.second_word(type_set[0]))
                     result_set.append(("type", None, self.second_word(type_set[0]), type_set, comment_queue))
                 elif self.first_word(line) == "import":
                     import_set = []
