@@ -109,7 +109,7 @@ func typeFunc1(c *CustomType, sep string) (int) {
     return 0
 }
 
-func typeFunc2(c *CustomType) (int) {
+func (c *CustomType) typeFunc2() (int) {
     return 0
 }
 

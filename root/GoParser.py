@@ -96,18 +96,18 @@ class GoParser:
                     was_begin = False
 
                 if self.first_word(line) == "func":
-                    parameter_string = line[self.char_occur(line, '(')[0]+1:self.char_occur(line, ')')[0]]
-                    first_param = parameter_string.split(',')[0]
-                    first_param_type = None
-                    if '*' in first_param:
-                        first_param_type = first_param[self.char_occur(first_param, '*')[0] + 1:]
+                    have_pointer = False
+                    if self.second_word(line)[0] == "(":
+                        have_pointer = True
 
-                    if first_param_type:
-                        func_title = "func (*" + first_param_type + ") " + self.second_word(line)[:self.char_occur(self.second_word(line), '(')[0]]
-                        result_set.append(("function", first_param_type, func_title, line[:-2], comment_queue))
+                    if have_pointer:
+                        pointer_param = line[self.char_occur(line, '(')[0]+1:self.char_occur(line, ')')[0]].split(',')[0]
+                        first_param_type = pointer_param[self.char_occur(pointer_param, '*')[0] + 1:]
+                        func_title = "func (*" + first_param_type + ")" + line[self.char_occur(line, ')')[0]+1:self.char_occur(line, '(')[1]]
+                        result_set.append(("function", first_param_type, func_title, line[:self.char_occur(line, '{')[0]-1], comment_queue))
                     else:
                         func_title = "func " + self.second_word(line)[:self.char_occur(self.second_word(line), '(')[0]]
-                        result_set.append(("function", None, func_title, line[:-2], comment_queue))
+                        result_set.append(("function", None, func_title, line[:self.char_occur(line, '{')[0]-1], comment_queue))
                 elif self.first_word(line) == "package":
                     #
                     result_set.append(("package", None, line, line, comment_queue))
