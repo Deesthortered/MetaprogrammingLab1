@@ -1,5 +1,5 @@
 import os
-
+import json
 
 class GoParser:
     # Global
@@ -8,16 +8,26 @@ class GoParser:
         os.makedirs(destination_folder_path)
         file_list = self.go_throw_directory(input_folder_path, destination_folder_path, prefix_ind)
 
-        for i in file_list:
-            print(i)
-
+        for pair in file_list:
+            if pair[0][-3:] == ".go":
+                self.start_file(pair[0], pair[1])
+            if pair[0].split('/')[-1] == "readme.txt":
+                doc_file1 = open(pair[0], "r")
+                doc_file2 = open(pair[1], "a")
+                doc_file2.write("end\n")
+                doc_file2.write(json.dumps(doc_file1.readlines(), indent=2))
+                doc_file1.close()
+                doc_file2.close()
         pass
 
     def start_file(self, input_file_path, destination_file_path):
         input_file = open(input_file_path, encoding='utf-8', mode='r')
-        self.parse_file(input_file)
-
+        middle_data = self.parse_file(input_file)
         input_file.close()
+        output_file = open(destination_file_path, encoding='utf-8', mode='a')
+        json_str = json.dumps(middle_data, indent=2)
+        output_file.write(json_str)
+        output_file.close()
         pass
 
     # Directory handling ##
@@ -48,7 +58,7 @@ class GoParser:
                 nested_items = nested_items + nested_files
         if "readme.txt" not in node_list:
             f = open(new_folder_path + "/readme.txt.html", "a+")
-            nested_items.append(new_folder_path + "/readme.txt.html")
+            nested_items.append(("", new_folder_path + "/readme.txt.html"))
             f.close()
         return nested_items
     #######################
@@ -134,8 +144,9 @@ class GoParser:
 
                 comment_queue = []
 
-        for i in result_set:
-            print(i)
+        # for i in result_set:
+        #     print(i)
+        return result_set
 
     def line_is_comment(self, line):
         return len(line) >= 2 and line[0] == line[1] == '/'
