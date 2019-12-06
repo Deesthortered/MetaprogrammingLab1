@@ -13,7 +13,7 @@ class GoHtmlCreator:
         file = open(file_path, encoding='utf-8', mode='w')
 
         package_name = None
-        import_list = None
+        import_list = []
         overview = ""
         indexes = None
         items = None  # (type, depency, title, code, description)
@@ -28,7 +28,8 @@ class GoHtmlCreator:
             elif ptoken[0] == 'package':
                 package_name = ptoken[2]
             elif ptoken[0] == 'imports':
-                pass
+                for i in ptoken[3]:
+                    import_list.append(i)
             elif ptoken[0] == 'constant':
                 pass
             elif ptoken[0] == 'variable':
@@ -48,6 +49,9 @@ class GoHtmlCreator:
 
         if package_name != None:
             result_text += self.envelop_package(package_name)
+
+        if import_list:
+            result_text += self.envelop_imports(import_list)
 
         if overview != "":
             result_text += self.envelop_overview(overview)
@@ -69,6 +73,25 @@ class GoHtmlCreator:
             """
         text = text[:1].upper() + text[1:]
         return before + text + after
+
+    def envelop_imports(self, import_list):
+        before = \
+            """
+            <div class="alert alert-primary" role="alert"> Imports </div>
+            <div class="alert alert-light" role="alert">
+            """
+        after = \
+            """
+            </div>
+            """
+
+        content = ""
+        for i in import_list:
+            pref = "<h5>"
+            post = "</h5>"
+            content += pref + i + post
+
+        return before + content + after
 
     def envelop_overview(self, text):
         before = \
