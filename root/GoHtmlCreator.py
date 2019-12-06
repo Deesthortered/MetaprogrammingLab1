@@ -16,6 +16,7 @@ class GoHtmlCreator:
         import_list = []
         overview = ""
         type_list = []
+        func_list = []
 
         result_text = ""
         for ptoken in token_set:  # (type, depency, title, code, description)
@@ -41,7 +42,10 @@ class GoHtmlCreator:
             elif ptoken[0] == 'type':
                 type_list.append((ptoken, []))
             elif ptoken[0] == 'function':
-                pass
+                if ptoken[1] != None:
+                    pass
+                else:
+                    func_list.append(ptoken)
 
             print(ptoken)
 
@@ -57,6 +61,10 @@ class GoHtmlCreator:
         if type_list:
             for type in type_list:
                 result_text += self.envelop_type(type)
+
+        if func_list:
+            for func_token in func_list:
+                result_text += self.envelop_function(func_token)
 
         file.write(self.final_envelop(result_text))
         file.close()
@@ -162,6 +170,33 @@ class GoHtmlCreator:
 
         return descrition + code
 
+    def envelop_function(self, ptoken):
+        title = """ <div class="alert alert-primary" role="alert"> """ + ptoken[2] + """ </div> """
+
+        before_code = \
+            """
+            <div class="alert alert-secondary" role="alert">
+            """
+        after_code = \
+            """
+            </div>
+            """
+        code = before_code + ptoken[3] + after_code
+
+        before_desc = \
+            """
+            <div class="alert alert-light" role="alert">
+            """
+        after_desc = \
+            """
+            </div>
+            """
+        desc_content = ""
+        for i in ptoken[4]:
+            desc_content += "<p>" + i + "</p>"
+
+        return title + code + before_desc + desc_content + after_desc
+
     def final_envelop(self, text):
         before = \
             """
@@ -177,6 +212,9 @@ class GoHtmlCreator:
                 <style type="text/css">
                   div.alert {
                       margin: 15px;
+                  };
+                  div.alert-secondary {
+                      margin: 40px;
                   }
                 </style>
     
