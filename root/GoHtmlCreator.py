@@ -21,6 +21,9 @@ class GoHtmlCreator:
         uncommented_consts = []
         uncommented_vars = []
 
+        commented_single_consts_vars = []
+        commented_many_consts_vars = []
+
         result_text = ""
         for ptoken in token_set:  # (type, depency, title, code, description)
             if ptoken[0] == 'File overview':
@@ -36,22 +39,22 @@ class GoHtmlCreator:
                 if not ptoken[4]:
                     uncommented_consts.append(ptoken)
                 else:
-                    pass
+                    commented_single_consts_vars.append(ptoken)
             elif ptoken[0] == 'variable':
                 if not ptoken[4]:
                     uncommented_vars.append(ptoken)
                 else:
-                    pass
+                    commented_single_consts_vars.append(ptoken)
             elif ptoken[0] == 'const_arr':
                 if not ptoken[4]:
                     uncommented_consts.append(ptoken)
                 else:
-                    pass
+                    commented_many_consts_vars.append(ptoken)
             elif ptoken[0] == 'variable_arr':
                 if not ptoken[4]:
                     uncommented_vars.append(ptoken)
                 else:
-                    pass
+                    commented_many_consts_vars.append(ptoken)
             elif ptoken[0] == 'type':
                 type_list.append((ptoken, []))
             elif ptoken[0] == 'function':
@@ -77,6 +80,12 @@ class GoHtmlCreator:
 
         if uncommented_vars:
             result_text += self.envelop_uncommneted_vars(uncommented_vars)
+
+        if commented_single_consts_vars:
+            result_text += self.envelop_commented_single_consts_vars(commented_single_consts_vars)
+
+        if commented_many_consts_vars:
+            result_text += self.envelop_commented_many_consts_vars(commented_many_consts_vars)
 
         if type_list:
             for type in type_list:
@@ -203,6 +212,12 @@ class GoHtmlCreator:
                 content += pref + i[3] + post
 
         return before + content + after
+
+    def envelop_commented_single_consts_vars(self, token_list):
+        pass
+
+    def envelop_commented_many_consts_vars(self, token_list):
+        pass
 
     def envelop_type(self, type):
         before_desc = \
