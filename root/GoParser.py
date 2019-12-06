@@ -8,16 +8,23 @@ class GoParser:
         os.makedirs(destination_folder_path)
         file_list = self.go_throw_directory(input_folder_path, destination_folder_path, prefix_ind)
 
+
         for pair in file_list:
             if pair[0][-3:] == ".go":
                 self.start_file(pair[0], pair[1])
-            if pair[0].split('/')[-1] == "readme.txt":
+            elif pair[0].split('/')[-1] == "readme.txt":
                 doc_file1 = open(pair[0], "r")
                 doc_file2 = open(pair[1], "a")
                 doc_file2.write("end\n")
                 doc_file2.write(json.dumps(doc_file1.readlines(), indent=2))
                 doc_file1.close()
                 doc_file2.close()
+            elif pair[0] == "":
+                doc_file2 = open(pair[1], "a")
+                doc_file2.write("end\n")
+                doc_file2.close()
+            else:
+                print("Error!")
         return [x[1] for x in file_list]
 
     def start_file(self, input_file_path, destination_file_path):
