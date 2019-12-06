@@ -96,8 +96,8 @@ class GoParser:
                     was_begin = False
 
                 if self.first_word(line) == "func":
-                    parameter_string = line[self.char_occur(line, '(')[0]:self.char_occur(line, '(')[1]]
-                    first_param = parameter_string[1:-2].split(',')[0]
+                    parameter_string = line[self.char_occur(line, '(')[0]+1:self.char_occur(line, ')')[0]]
+                    first_param = parameter_string.split(',')[0]
                     first_param_type = None
                     if '*' in first_param:
                         first_param_type = first_param[self.char_occur(first_param, '*')[0] + 1:]
