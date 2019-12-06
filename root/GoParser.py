@@ -157,6 +157,7 @@ class GoParser:
                         type_set.append(sub_line.strip())
                         j += 1
                         sub_line = lines[j]
+                    type_set.append(sub_line.strip())
                     type_struct_set.append(self.second_word(type_set[0]))
                     result_set.append(("type", None, self.second_word(type_set[0]), type_set, comment_queue))
                 elif self.first_word(line) == "import":

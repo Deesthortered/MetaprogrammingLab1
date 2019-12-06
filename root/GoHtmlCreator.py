@@ -15,13 +15,10 @@ class GoHtmlCreator:
         package_name = None
         import_list = []
         overview = ""
-        constant_list = []
-        indexes = None
-        items = None  # (type, depency, title, code, description)
+        type_list = []
 
         result_text = ""
-
-        for ptoken in token_set:
+        for ptoken in token_set:  # (type, depency, title, code, description)
             if ptoken[0] == 'File overview':
                 for line in ptoken[1]:
                     overview += line + "\n"
@@ -42,7 +39,7 @@ class GoHtmlCreator:
             elif ptoken[0] == 'const_arr':
                 pass
             elif ptoken[0] == 'type':
-                pass
+                type_list.append((ptoken, []))
             elif ptoken[0] == 'function':
                 pass
 
@@ -56,6 +53,10 @@ class GoHtmlCreator:
 
         if overview != "":
             result_text += self.envelop_overview(overview)
+
+        if type_list:
+            for type in type_list:
+                result_text += self.envelop_type(type)
 
         file.write(self.final_envelop(result_text))
         file.close()
@@ -128,6 +129,38 @@ class GoHtmlCreator:
             content += pref + i + post
 
         return before + content + after
+
+    def envelop_type(self, type):
+        before_desc = \
+            """
+            <div class="alert alert-primary" role="alert"> type """ + type[0][2] + """ </div>
+            <div class="alert alert-light" role="alert">
+            """
+        after_desc = \
+            """
+            </div>
+            """
+
+        desc_content = ""
+        for i in type[0][4]:
+            desc_content += "<p>" + i + "</p>"
+
+        descrition = before_desc + desc_content + after_desc
+
+        before_code = \
+            """
+            <div class="alert alert-secondary" role="alert">
+            """
+        after_code = \
+            """
+            </div>
+            """
+        cont_code = ""
+        for i in type[0][3]:
+            cont_code += "<p>" + i + "</p>"
+        code = before_code + cont_code + after_code
+
+        return descrition + code
 
     def final_envelop(self, text):
         before = \
