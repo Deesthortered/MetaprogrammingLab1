@@ -18,6 +18,9 @@ class GoHtmlCreator:
         type_list = []
         func_list = []
 
+        uncommented_consts = []
+        uncommented_vars = []
+
         result_text = ""
         for ptoken in token_set:  # (type, depency, title, code, description)
             if ptoken[0] == 'File overview':
@@ -30,15 +33,25 @@ class GoHtmlCreator:
                 for i in ptoken[3]:
                     import_list.append(i)
             elif ptoken[0] == 'constant':
-                pass
+                if not ptoken[4]:
+                    uncommented_consts.append(ptoken)
+                else:
+                    pass
             elif ptoken[0] == 'variable':
-                pass
+                if not ptoken[4]:
+                    uncommented_vars.append(ptoken)
+                else:
+                    pass
             elif ptoken[0] == 'const_arr':
-                pass
+                if not ptoken[4]:
+                    uncommented_consts.append(ptoken)
+                else:
+                    pass
             elif ptoken[0] == 'variable_arr':
-                pass
-            elif ptoken[0] == 'const_arr':
-                pass
+                if not ptoken[4]:
+                    uncommented_vars.append(ptoken)
+                else:
+                    pass
             elif ptoken[0] == 'type':
                 type_list.append((ptoken, []))
             elif ptoken[0] == 'function':
@@ -58,6 +71,12 @@ class GoHtmlCreator:
 
         if overview != "":
             result_text += self.envelop_overview(overview)
+
+        if uncommented_consts:
+            result_text += self.envelop_uncommneted_consts(uncommented_consts)
+
+        if uncommented_vars:
+            result_text += self.envelop_uncommneted_vars(uncommented_vars)
 
         if type_list:
             for type in type_list:
@@ -136,6 +155,52 @@ class GoHtmlCreator:
             pref = "<p>"
             post = "</p>"
             content += pref + i + post
+
+        return before + content + after
+
+    def envelop_uncommneted_consts(self, token_list):
+        before = \
+            """
+            <div class="alert alert-primary" role="alert"> <h3> Undocumented constants </h3> </div>
+            <div class="alert alert-light" role="alert">
+            """
+        after = \
+            """
+            </div>
+            """
+
+        content = ""
+        for i in token_list:
+            pref = "<h5>"
+            post = "</h5>"
+            if isinstance(i[3], list):
+                for j in i[3]:
+                    content += pref + j + post
+            else:
+                content += pref + i[3] + post
+
+        return before + content + after
+
+    def envelop_uncommneted_vars(self, token_list):
+        before = \
+            """
+            <div class="alert alert-primary" role="alert"> <h3> Undocumented variables </h3> </div>
+            <div class="alert alert-light" role="alert">
+            """
+        after = \
+            """
+            </div>
+            """
+
+        content = ""
+        for i in token_list:
+            pref = "<h5>"
+            post = "</h5>"
+            if isinstance(i[3], list):
+                for j in i[3]:
+                    content += pref + j + post
+            else:
+                content += pref + i[3] + post
 
         return before + content + after
 
