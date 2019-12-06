@@ -21,7 +21,7 @@
 // Comment for imported package
 // Импорты дальше не комментируются впринципе, но перечисляются
 package whatever_commented
-package not_commented_package
+
 
 import (
 	"internal/bytealg"

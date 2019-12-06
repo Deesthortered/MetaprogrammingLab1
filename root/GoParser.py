@@ -81,6 +81,7 @@ class GoParser:
             line = dirty_line.strip()
 
             if self.line_is_comment(line):
+                #
                 comment_queue.append(self.strip_comment_line(line))
             elif self.line_is_long_comment(line):
                 if line != "/*" and line != "*/":
@@ -94,11 +95,11 @@ class GoParser:
                     was_begin = False
 
                 if self.first_word(line) == "func":
-                    #
-                    result_set.append(("function", line[:-2], comment_queue))
+                    func_title = self.second_word(line)[:self.char_occur(self.second_word(line), '(')[0]]
+                    result_set.append(("function", None, func_title, line[:-2], comment_queue))
                 elif self.first_word(line) == "package":
                     #
-                    result_set.append(("package", line, comment_queue))
+                    result_set.append(("package", None, line, line, comment_queue))
                 elif self.first_word(line) == "const":
                     if self.second_word(line) == "(":
                         const_set = []
@@ -108,9 +109,9 @@ class GoParser:
                             const_set.append(sub_line.strip())
                             j += 1
                             sub_line = lines[j]
-                        result_set.append(("const_arr", const_set, comment_queue))
+                        result_set.append(("const_arr", None, "Constants", const_set, comment_queue))
                     else:
-                        result_set.append(("constant", line, comment_queue))
+                        result_set.append(("constant", None, self.second_word(line), line, comment_queue))
                 elif self.first_word(line) == "var":
                     if self.second_word(line) == "(":
                         var_set = []
@@ -120,9 +121,9 @@ class GoParser:
                             var_set.append(sub_line.strip())
                             j += 1
                             sub_line = lines[j]
-                        result_set.append(("variable_arr", var_set, comment_queue))
+                        result_set.append(("variable_arr", None, "Variables", var_set, comment_queue))
                     else:
-                        result_set.append(("variable", line, comment_queue))
+                        result_set.append(("variable", None, self.second_word(line), line, comment_queue))
                 elif self.first_word(line) == "type" and line[-1] == "{":
                     type_set = [line]
                     j = i + 1
@@ -131,7 +132,7 @@ class GoParser:
                         type_set.append(sub_line.strip())
                         j += 1
                         sub_line = lines[j]
-                    result_set.append(("type", type_set, comment_queue))
+                    result_set.append(("type", None, self.second_word(type_set[0]), type_set, comment_queue))
                 elif self.first_word(line) == "import":
                     import_set = []
                     j = i + 1
@@ -140,12 +141,9 @@ class GoParser:
                         import_set.append(sub_line.strip())
                         j += 1
                         sub_line = lines[j]
-                    result_set.append(("imports", import_set))
+                    result_set.append(("imports", None, "Imports", import_set, comment_queue))
 
                 comment_queue = []
-
-        # for i in result_set:
-        #     print(i)
         return result_set
 
     def line_is_comment(self, line):
@@ -173,5 +171,5 @@ class GoParser:
         return line.split(' ', 1)[0]
 
     def second_word(self, line):
-        return line.split(' ', 1)[1]
+        return line.split(' ')[1]
     #######################
