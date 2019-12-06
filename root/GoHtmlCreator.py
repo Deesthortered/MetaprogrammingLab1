@@ -43,7 +43,8 @@ class GoHtmlCreator:
                 type_list.append((ptoken, []))
             elif ptoken[0] == 'function':
                 if ptoken[1] != None:
-                    pass
+                    type_t = list(filter(lambda t: t[0][2] == ptoken[1], type_list))[0]
+                    type_t[1].append(ptoken)
                 else:
                     func_list.append(ptoken)
 
@@ -103,7 +104,7 @@ class GoHtmlCreator:
     def envelop_imports(self, import_list):
         before = \
             """
-            <div class="alert alert-primary" role="alert"> Imports </div>
+            <div class="alert alert-primary" role="alert"> <h3> Imports </h3> </div>
             <div class="alert alert-light" role="alert">
             """
         after = \
@@ -122,7 +123,7 @@ class GoHtmlCreator:
     def envelop_overview(self, text):
         before = \
             """
-            <div class="alert alert-primary" role="alert"> Overview </div>
+            <div class="alert alert-primary" role="alert"> <h3> Overview </h3> </div>
             <div class="alert alert-light" role="alert">
             """
         after = \
@@ -141,7 +142,7 @@ class GoHtmlCreator:
     def envelop_type(self, type):
         before_desc = \
             """
-            <div class="alert alert-primary" role="alert"> type """ + type[0][2] + """ </div>
+            <div class="alert alert-primary" role="alert"> <h3> type """ + type[0][2] + """ </h3> </div>
             <div class="alert alert-light" role="alert">
             """
         after_desc = \
@@ -168,10 +169,41 @@ class GoHtmlCreator:
             cont_code += "<p>" + i + "</p>"
         code = before_code + cont_code + after_code
 
-        return descrition + code
+        sub_func = ""
+        for func in type[1]:
+            sub_func += self.envelop_sub_sunction(func)
+
+        return descrition + code + sub_func
+
+    def envelop_sub_sunction(self, ptoken):
+        title = """ <div class="alert alert-light" role="alert"> <h3> """ + ptoken[2] + """ </h3> </div> """
+
+        before_code = \
+            """
+            <div class="alert alert-secondary" role="alert">
+            """
+        after_code = \
+            """
+            </div>
+            """
+        code = before_code + ptoken[3] + after_code
+
+        before_desc = \
+            """
+            <div class="alert alert-light" role="alert">
+            """
+        after_desc = \
+            """
+            </div>
+            """
+        desc_content = ""
+        for i in ptoken[4]:
+            desc_content += "<p>" + i + "</p>"
+
+        return title + code + before_desc + desc_content + after_desc
 
     def envelop_function(self, ptoken):
-        title = """ <div class="alert alert-primary" role="alert"> """ + ptoken[2] + """ </div> """
+        title = """ <div class="alert alert-primary" role="alert"> <h3> """ + ptoken[2] + """ </h3> </div> """
 
         before_code = \
             """
