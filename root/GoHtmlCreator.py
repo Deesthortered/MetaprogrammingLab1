@@ -3,7 +3,11 @@ import json
 class GoHtmlCreator:
     # Global ##############
     def create_folder(self, path_list):
-
+        for file in path_list:
+            if file.split("/")[-1] == "readme.txt.html":
+                self.build_readme(file)
+            else:
+                pass
         pass
 
     def create_file(self, file_path):
@@ -406,3 +410,17 @@ class GoHtmlCreator:
             </html>
             """
         return before + text + after
+
+    # For readme
+    def build_readme(self, path):
+        file = open(path, encoding='utf-8', mode='r')
+        references = []
+        line = None
+        while line != "end":
+            line = file.readline().strip()
+            references.append(line)
+            pass
+        print(references)
+        file.close()
+
+        pass
