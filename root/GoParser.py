@@ -18,7 +18,7 @@ class GoParser:
                 doc_file2.write(json.dumps(doc_file1.readlines(), indent=2))
                 doc_file1.close()
                 doc_file2.close()
-        pass
+        return [x[1] for x in file_list]
 
     def start_file(self, input_file_path, destination_file_path):
         input_file = open(input_file_path, encoding='utf-8', mode='r')

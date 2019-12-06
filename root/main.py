@@ -1,10 +1,11 @@
 import sys
 import os
 from GoParser import GoParser
+from GoHtmlCreator import GoHtmlCreator
 
 
-# python main.py file ./test_files/string.go ./result_directory/string_result.html
-# python main.py folder ./test_files/testDirectory ./result_directory/dir_result
+# python main.py file ./test_files/string.go ./string_result.html
+# python main.py folder ./test_files/testDirectory ./result_directory
 
 
 def proceed_directory(input_directory, destination_directory):
@@ -44,6 +45,7 @@ def proceed_file(input_file, destination_file):
 
 if __name__ == "__main__":
     parser = GoParser()
+    htmlCreator = GoHtmlCreator()
 
     if len(sys.argv) == 1:
         print("This is the Goland Documentator.")
@@ -52,9 +54,11 @@ if __name__ == "__main__":
         if sys.argv[1] == "file":
             if proceed_file(sys.argv[2], sys.argv[3]):
                 parser.start_file(sys.argv[2], sys.argv[3])
+                htmlCreator.create_file(sys.argv[3])
         elif sys.argv[1] == "folder":
             if proceed_directory(sys.argv[2], sys.argv[3]):
-                parser.start_folder(sys.argv[2], sys.argv[3])
+                path_list = parser.start_folder(sys.argv[2], sys.argv[3])
+                htmlCreator.create_folder(path_list)
         else:
             print("Unknown 2-nd parameter.")
             print("Please, type \"--help\" for manual of usage.")
