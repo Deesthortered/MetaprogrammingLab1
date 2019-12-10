@@ -7,7 +7,7 @@ class GoHtmlCreator:
             if file.split("/")[-1] == "readme.txt.html":
                 self.build_readme(file)
             else:
-                pass
+                self.create_file(file)
         pass
 
     def create_file(self, file_path):

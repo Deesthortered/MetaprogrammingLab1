@@ -54,8 +54,11 @@ class GoParser:
             if os.path.isfile(node):
                 new_file_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[1]:] + "/" + node.split('/')[-1] + ".html"
                 nested_items.append((node, new_file_path))
-                f = open(new_file_path, "a+")
-                f.close()
+                f1 = open(new_file_path, "a+")
+                f1.close()
+                f2 = open(new_folder_path + "/readme.txt.html", "a+")
+                f2.write(new_file_path + "\n")
+                f2.close()
             elif os.path.isdir(node):
                 nested_files = self.go_throw_directory(node, destination_folder_path, prefix_ind)
                 f = open(new_folder_path + "/readme.txt.html", "a+")

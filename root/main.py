@@ -55,10 +55,12 @@ if __name__ == "__main__":
             if proceed_file(sys.argv[2], sys.argv[3]):
                 parser.start_file(sys.argv[2], sys.argv[3])
                 htmlCreator.create_file(sys.argv[3])
+                print("Done!!!")
         elif sys.argv[1] == "folder":
             if proceed_directory(sys.argv[2], sys.argv[3]):
                 path_list = parser.start_folder(sys.argv[2], sys.argv[3])
                 htmlCreator.create_folder(path_list)
+                print("Done!!!")
         else:
             print("Unknown 2-nd parameter.")
             print("Please, type \"--help\" for manual of usage.")
