@@ -388,7 +388,7 @@ class GoHtmlCreator:
                 <style type="text/css">
                   div.alert {
                       margin: 15px;
-                  };
+                  }
                   div.alert-secondary {
                       margin: 40px;
                   }
@@ -414,13 +414,41 @@ class GoHtmlCreator:
     # For readme
     def build_readme(self, path):
         file = open(path, encoding='utf-8', mode='r')
+        pref = path[:self.char_occur(path, '/')[-1]]
         references = []
         line = None
         while line != "end":
             line = file.readline().strip()
-            references.append(line)
+            references.append('.' + line[len(pref):])
             pass
-        print(references)
+        references.pop()
+        raw_overview = file.read()
         file.close()
 
-        pass
+        if raw_overview == '':
+            raw_overview = "[\"There is no overview\"]"
+
+        overview_page = self.build_overview(json.loads(raw_overview))
+        ref_page = self.build_references(references)
+
+        final_text = self.final_envelop(overview_page + ref_page)
+        file = open(path, encoding='utf-8', mode='w')
+        file.write(final_text)
+        file.close()
+
+    def char_occur(self, in_string, char_val):
+        return [i for i, letter in enumerate(in_string) if letter == char_val]
+
+    def build_references(self, reference_list):
+        result_text = ""
+        for reference in reference_list:
+            result_text += """ <a class="nav-link active" href="{ref}"> {title} </a> \n"""\
+                .format(ref=reference,
+                        title=reference.split("/")[-1 if reference[-8:] == '.go.html' else -2])
+        return result_text
+
+    def build_overview(self, text_list):
+        content = ""
+        for line in text_list:
+            content += "<p>" + line.strip() + "</p>\n"
+        return content
