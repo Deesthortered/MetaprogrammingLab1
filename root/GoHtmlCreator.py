@@ -482,8 +482,8 @@ class GoHtmlCreator:
             result_text += before
             for reference in dir_list:
                 result_text += """ <a class="nav-link active" href="{ref}"> {title} </a> \n"""\
-                    .format(ref=reference,
-                            title=reference.split("/")[-2])
+                    .format(ref=reference + "/readme.txt.html",
+                            title=reference.split("/")[-1])
             result_text += after
 
         if file_list:
