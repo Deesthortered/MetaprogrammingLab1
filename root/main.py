@@ -76,6 +76,7 @@ if __name__ == "__main__":
             print("    2) Path to the target folder")
             print("    3) Path to the destination folder, which will be created")
             print("       Warning! The folder must not exist before")
+            print("       Warning!!! The folder must store only *.go files and \"readme.txt\"")
         else:
             print("Unknown parameter. Please, type \"--help\" for manual of usage.")
     else:

@@ -373,8 +373,21 @@ class GoHtmlCreator:
 
         return title + code + before_desc + desc_content + after_desc
 
-    def final_envelop(self, text):
-        before = \
+    def styles(self):
+        return \
+        """
+            <style type="text/css">
+              div.alert {
+                margin: 15px;
+              }
+              div.alert-secondary {
+                margin-left: 40px;
+              }
+            </style>
+        """
+
+    def final_envelop(self, body):
+        envelop = \
             """
             <!doctype html>
             <html lang="en">
@@ -385,22 +398,15 @@ class GoHtmlCreator:
                 
                 <!-- Bootstrap CSS -->
                 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-                <style type="text/css">
-                  div.alert {
-                      margin: 15px;
-                  }
-                  div.alert-secondary {
-                      margin: 40px;
-                  }
-                </style>
-    
+                
+                {styles}
+                
                 <title>Hello, world!</title>
               </head>
               <body>
-            """
-
-        after = \
-            """
+              
+                {body_html}
+              
                 <!-- Optional JavaScript -->
                 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
                 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -408,8 +414,9 @@ class GoHtmlCreator:
                 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
               </body>
             </html>
-            """
-        return before + text + after
+            """.format(styles=self.styles(), body_html=body)
+
+        return envelop
 
     # For readme
     def build_readme(self, path):
@@ -428,7 +435,7 @@ class GoHtmlCreator:
         if raw_overview == '':
             raw_overview = "[\"There is no overview\"]"
 
-        overview_page = self.build_overview(json.loads(raw_overview))
+        overview_page = self.build_overview(json.loads(raw_overview), path.split('/')[-2])
         ref_page = self.build_references(references)
 
         final_text = self.final_envelop(overview_page + ref_page)
@@ -440,15 +447,78 @@ class GoHtmlCreator:
         return [i for i, letter in enumerate(in_string) if letter == char_val]
 
     def build_references(self, reference_list):
-        result_text = ""
+        dir_list = []
+        file_list = []
         for reference in reference_list:
-            result_text += """ <a class="nav-link active" href="{ref}"> {title} </a> \n"""\
-                .format(ref=reference,
-                        title=reference.split("/")[-1 if reference[-8:] == '.go.html' else -2])
+            if len(reference) >= 8 and reference[-8:] == '.go.html':
+                file_list.append(reference)
+            else:
+                dir_list.append(reference)
+
+        result_text = ""
+
+        before_code = \
+            """
+            <div class="alert alert-secondary" role="alert">
+            """
+        after_code = \
+            """
+            </div>
+            """
+
+        before = \
+            """
+            <div class="alert alert-light" role="alert">\n
+            """
+        after = \
+            """
+            </div>\n
+            """
+
+        result_text += before_code
+
+        if dir_list:
+            result_text += "<h3> {title} </h3>".format(title="Direstories")
+            result_text += before
+            for reference in dir_list:
+                result_text += """ <a class="nav-link active" href="{ref}"> {title} </a> \n"""\
+                    .format(ref=reference,
+                            title=reference.split("/")[-2])
+            result_text += after
+
+        if file_list:
+            result_text += "<h3> {title} </h3>".format(title="Files")
+            result_text += before
+            for reference in file_list:
+                result_text += """ <a class="nav-link active" href="{ref}"> {title} </a> \n"""\
+                    .format(ref=reference,
+                            title=reference.split("/")[-1])
+            result_text += after
+
+        if not dir_list and not file_list:
+            result_text += "<h5> {title} </h5>".format(title="There is not references.")
+
+        result_text += after_code
+
         return result_text
 
-    def build_overview(self, text_list):
+    def build_overview(self, text_list, name):
+        title = \
+            """ <div class="alert alert-primary" role="alert"> <h3> Directory overview ({dir_name}) </h3> </div> \n"""\
+            .format(dir_name=name)
+
+        before = \
+            """
+            <div class="alert alert-secondary" role="alert">\n
+            """
+        after = \
+            """
+            </div>\n
+            """
+
         content = ""
         for line in text_list:
-            content += "<p>" + line.strip() + "</p>\n"
-        return content
+            content += "<p> {h_line} </p>\n"\
+                .format(h_line=line.strip())
+
+        return title + before + content + after
