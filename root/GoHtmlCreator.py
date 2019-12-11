@@ -1,14 +1,15 @@
 import json
+from datetime import date
 
 class GoHtmlCreator:
     # Global ##############
     def create_folder(self, path_list):
+        self.build_main_page(path_list[0].split('/')[1], path_list)
         for file in path_list:
             if file.split("/")[-1] == "readme.txt.html":
                 self.build_readme(file)
             else:
                 self.create_file(file)
-        pass
 
     def create_file(self, file_path):
         file = open(file_path, encoding='utf-8', mode='r')
@@ -522,3 +523,91 @@ class GoHtmlCreator:
                 .format(h_line=line.strip())
 
         return title + before + content + after
+
+    # Main page
+    def build_main_page(self, root_name, path_list):
+        project_name = root_name[:1].upper() + root_name[1:]
+        project_version = "v0.01"
+        date_of_generation = date.today()
+        parser_name = "SuperGoDocumenter"
+
+        ierarchy_code = self.make_ierarchy(root_name, path_list)
+
+        content = ierarchy_code
+        result_code = self.final_envelop(content)
+
+        file = open("./" + root_name + "/main.html", encoding='utf-8', mode='w')
+        file.write(result_code)
+        file.close()
+
+        pass
+
+    def make_ierarchy(self, root_path, path_list):
+        ierarchy = self.go_dfs_ierarchy(path_list, root_path, 1)
+        code = self.print_ierarchy(ierarchy, True)
+        return code
+
+    def go_dfs_ierarchy(self, path_list, dir_name, depth):
+        result_d = [[], dir_name]
+        tmp_deeper = []
+        dir_dic = {}
+        for i in path_list:
+            path = i[self.char_occur(i, '/')[depth]:]
+            depth_remains = len(self.char_occur(path, '/'))
+            if depth_remains == 1:
+                result_d[0].append(i)
+            else:
+                cur_dir_name = i[self.char_occur(i, '/')[depth]+1:self.char_occur(i, '/')[depth+1]]
+                if not (cur_dir_name in dir_dic):
+                    dir_dic[cur_dir_name] = [[], cur_dir_name]
+                    tmp_deeper.append(dir_dic[cur_dir_name])
+                dir_dic[cur_dir_name][0].append(i)
+
+        for sub_list in tmp_deeper:
+            sub_res = self.go_dfs_ierarchy(sub_list[0], sub_list[1], depth+1)
+            result_d[0].append(sub_res)
+
+        return result_d
+    def print_ierarchy(self, cur_ierarchy, tiktok):
+        before = None
+        after = None
+        if tiktok:
+            before = \
+                """
+                <div class="alert alert-secondary" role="alert">\n
+                """
+            after = \
+                """
+                </div>\n
+                """
+        else:
+            before = \
+                """
+                <div class="alert alert-light" role="alert">\n
+                """
+            after = \
+                """
+                </div>\n
+                """
+
+        content = ""
+
+        after_list = []
+        for i in cur_ierarchy:
+            if isinstance(i, list):
+                content += self.print_ierarchy(i, not tiktok)
+            else:
+                after_list.append(i)
+
+        for i in after_list:
+            cur_ref = "." + i[self.char_occur(i, '/')[1]:]
+            cur_content = i[self.char_occur(i, '/')[-1]+1:]
+            line = "<p> <a href=\"{ref}\"> {content} </a> </p>\n"\
+                .format(ref=cur_ref, content=cur_content)
+            content += line
+
+        return before + content + after
+
+    def make_alphabet(self, path_list):
+
+        pass
