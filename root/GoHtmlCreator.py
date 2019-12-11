@@ -545,7 +545,9 @@ class GoHtmlCreator:
     def make_ierarchy(self, root_path, path_list):
         ierarchy = self.go_dfs_ierarchy(path_list, root_path, 1)
         code = self.print_ierarchy(ierarchy, True)
-        return code
+        title = \
+            """ <div class="alert alert-primary" role="alert"> <h3> Directory ierarchy </h3> </div> \n"""
+        return title + code
 
     def go_dfs_ierarchy(self, path_list, dir_name, depth):
         result_d = [[], dir_name]
@@ -590,10 +592,11 @@ class GoHtmlCreator:
                 </div>\n
                 """
 
-        content = ""
+        content = "<h5> {dir_name} </h5>\n"\
+            .format(dir_name=cur_ierarchy[1])
 
         after_list = []
-        for i in cur_ierarchy:
+        for i in cur_ierarchy[0]:
             if isinstance(i, list):
                 content += self.print_ierarchy(i, not tiktok)
             else:
