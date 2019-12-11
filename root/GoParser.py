@@ -146,13 +146,30 @@ class GoParser:
                         start_poses = self.char_occur(pointer_param, '*')
                         first_param_type = pointer_param[start_poses[0] + 1 if len(start_poses) > 0 else 0:]
                         func_title = "func (*" + first_param_type + ")" + line[self.char_occur(line, ')')[0]+1:self.char_occur(line, '(')[1]]
-                        result_set.append(("function", first_param_type, func_title, line[:self.char_occur(line, '{')[0]-1], comment_queue))
+
+                        func_prot = ""
+                        j = i
+                        sub_line = lines[j].strip()
+                        while len(self.char_occur(sub_line, '{')) - len(self.char_occur(sub_line, '}')) == 0:
+                            j += 1
+                            sub_line = lines[j].strip()
+                            func_prot += sub_line + "\n"
+                        func_prot += sub_line[:self.char_occur(sub_line, '{')[-1]] + "\n"
+
+                        result_set.append(("function", first_param_type, func_title, func_prot, comment_queue))
                     else:
                         func_title = "func " + self.second_word(line)[:self.char_occur(self.second_word(line), '(')[0]]
-                        if self.char_occur(line, '{'):
-                            result_set.append(("function", None, func_title, line[:self.char_occur(line, '{')[0]-1], comment_queue))
-                        else:
-                            result_set.append(("function", None, func_title, line[:self.char_occur(line, '(')[0]-1], comment_queue))
+                        func_prot = ""
+
+                        j = i
+                        sub_line = lines[j].strip()
+                        while len(self.char_occur(sub_line, '{')) - len(self.char_occur(sub_line, '}')) == 0:
+                            j += 1
+                            sub_line = lines[j].strip()
+                            func_prot += sub_line + "\n"
+                        func_prot += sub_line[:self.char_occur(sub_line, '{')[-1]] + "\n"
+
+                        result_set.append(("function", None, func_title, func_prot, comment_queue))
 
                     bracers_count = 0
                     bracers_count += len(self.char_occur(line, '{'))
