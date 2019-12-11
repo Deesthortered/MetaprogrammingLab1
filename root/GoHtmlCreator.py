@@ -64,8 +64,12 @@ class GoHtmlCreator:
                 type_list.append((ptoken, []))
             elif ptoken[0] == 'function':
                 if ptoken[1] != None:
-                    type_t = list(filter(lambda t: t[0][2] == ptoken[1], type_list))[0]
-                    type_t[1].append(ptoken)
+                    type_t = list(filter(lambda t: t[0][2] == ptoken[1], type_list))
+                    if len(type_t) > 0:
+                        type_t = type_t[0]
+                        type_t[1].append(ptoken)
+                    else:
+                        func_list.append(ptoken)
                 else:
                     func_list.append(ptoken)
 
@@ -622,6 +626,19 @@ class GoHtmlCreator:
                 tmp_list = json.loads(json_text)
                 element_list += tmp_list
 
+        element_list = list(filter(lambda x: x[0] != 'File overview' and
+                                             x[0] != 'variable_arr' and
+                                             x[0] != 'variable' and
+                                             x[0] != 'const_arr' and
+                                             x[0] != 'constant' and
+                                             x[0] != 'package' and
+                                             x[0] != 'imports', element_list))
+
+        element_list.sort(key=lambda x: x[2][self.char_occur(x[2], ' ')[-1]+1:].casefold()
+                            if len(self.char_occur(x[2], ' ')) > 0
+                            else x[2].casefold())
+
+        print('########')
         for i in element_list:
             print(i)
 
