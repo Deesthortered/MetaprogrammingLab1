@@ -532,8 +532,9 @@ class GoHtmlCreator:
         parser_name = "SuperGoDocumenter"
 
         ierarchy_code = self.make_ierarchy(root_name, path_list)
+        alphabet_code = self.make_alphabet(path_list)
 
-        content = ierarchy_code
+        content = ierarchy_code + alphabet_code
         result_code = self.final_envelop(content)
 
         file = open("./" + root_name + "/main.html", encoding='utf-8', mode='w')
@@ -612,5 +613,17 @@ class GoHtmlCreator:
         return before + content + after
 
     def make_alphabet(self, path_list):
+        element_list = []
+        for file in path_list:
+            if len(file) >= 8 and file[-8:] == '.go.html':
+                f_d = open(file, encoding='utf-8', mode='r')
+                json_text = f_d.read()
+                f_d.close()
+                tmp_list = json.loads(json_text)
+                element_list += tmp_list
 
-        pass
+        for i in element_list:
+            print(i)
+
+        code = ""
+        return code
