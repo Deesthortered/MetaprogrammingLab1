@@ -181,10 +181,6 @@ class GoParser:
                     result_set.append(("imports", None, "Imports", import_set, comment_queue))
 
                 comment_queue = []
-
-        for i in result_set:
-            print(i)
-
         return result_set
 
     def line_is_comment(self, line):

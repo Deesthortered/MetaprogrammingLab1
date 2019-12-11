@@ -624,6 +624,8 @@ class GoHtmlCreator:
                 json_text = f_d.read()
                 f_d.close()
                 tmp_list = json.loads(json_text)
+                for i in tmp_list:
+                    i.append(file)
                 element_list += tmp_list
 
         element_list = list(filter(lambda x: x[0] != 'File overview' and
@@ -638,9 +640,25 @@ class GoHtmlCreator:
                             if len(self.char_occur(x[2], ' ')) > 0
                             else x[2].casefold())
 
-        print('########')
-        for i in element_list:
-            print(i)
+        return self.print_alphabet(element_list)
 
-        code = ""
-        return code
+    def print_alphabet(self, element_list):
+        title = \
+            """ <div class="alert alert-primary" role="alert"> <h3> Alphabet </h3> </div> \n"""
+        before = \
+            """
+            <div class="alert alert-light" role="alert">\n
+            """
+        after = \
+            """
+            </div>\n
+            """
+
+        content = ""
+        for i in element_list:
+            cur_ref = "." + i[-1][self.char_occur(i[-1], '/')[1]:]
+            cur_content = i[2]
+            content += "<h5> <a href=\"{ref}\"> {text} </a> </h5> \n" \
+                .format(ref=cur_ref, text=cur_content)
+
+        return title + before + content + after
