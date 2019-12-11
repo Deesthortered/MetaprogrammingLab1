@@ -31,6 +31,23 @@ class GoParser:
         input_file = open(input_file_path, encoding='utf-8', mode='r')
         middle_data = self.parse_file(input_file)
         input_file.close()
+
+        imports_tokens = list(filter(lambda t: t[0] == "imports", middle_data))
+        all_imports = []
+        for i in imports_tokens:
+            imports_lines = i[3]
+            for j in range(len(imports_lines)):
+                imports_lines[j] = imports_lines[j][1:-1]
+                if len(self.char_occur(imports_lines[j], '/')) > 0:
+                    imports_lines[j] = imports_lines[j][self.char_occur(imports_lines[j], '/')[-1]+1:]
+            all_imports += imports_lines
+
+        if all_imports:
+            pass
+
+        input_file = open(input_file_path, encoding='utf-8', mode='r')
+        input_file.close()
+
         output_file = open(destination_file_path, encoding='utf-8', mode='a')
         json_str = json.dumps(middle_data, indent=2)
         output_file.write(json_str)
