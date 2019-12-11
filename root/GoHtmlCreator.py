@@ -8,13 +8,19 @@ class GoHtmlCreator:
         for file in path_list:
             if file.split("/")[-1] == "readme.txt.html":
                 self.build_readme(file)
-            else:
+            elif len(file) >= 3 and file[:-3] == ".go":
                 self.create_file(file)
 
     def create_file(self, file_path):
         file = open(file_path, encoding='utf-8', mode='r')
-        token_set = json.loads(file.read())
+        json_data = file.read().strip()
         file.close()
+
+        if json_data == "":
+            print("Empty json for file")
+            return
+
+        token_set = json.loads(json_data)
         file = open(file_path, encoding='utf-8', mode='w')
 
         package_name = None

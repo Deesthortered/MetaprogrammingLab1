@@ -10,7 +10,7 @@ class GoParser:
 
 
         for pair in file_list:
-            if pair[0][-3:] == ".go":
+            if len(pair[0]) >= 3 and pair[0][-3:] == ".go":
                 self.start_file(pair[0], pair[1])
             elif pair[0].split('/')[-1] == "readme.txt":
                 doc_file1 = open(pair[0], "r")
@@ -24,7 +24,7 @@ class GoParser:
                 doc_file2.write("end\n")
                 doc_file2.close()
             else:
-                print("Error!")
+                print("Error!: " + pair[0])
         return [x[1] for x in file_list]
 
     def start_file(self, input_file_path, destination_file_path):
@@ -76,7 +76,7 @@ class GoParser:
         nested_items = []
         for i in node_list:
             node = current_path + "/" + i
-            if os.path.isfile(node):
+            if os.path.isfile(node) and len(i) >= 3 and i[-3:] == ".go":
                 new_file_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[1]:] + "/" + i + ".html"
                 nested_items.append((node, new_file_path))
                 f1 = open(new_file_path, "a+")
@@ -91,6 +91,9 @@ class GoParser:
                 f.write(new_folder_path + "/" + i + "\n")
                 f.close()
                 nested_items = nested_items + nested_files
+            else:
+                print("Node = " + node)
+                print("   This is not *.go file and not \"readme.txt\", so it will be ignored")
         if "readme.txt" not in node_list:
             f = open(new_folder_path + "/readme.txt.html", "a+")
             nested_items.append(("", new_folder_path + "/readme.txt.html"))
@@ -140,7 +143,8 @@ class GoParser:
 
                     if have_pointer:
                         pointer_param = line[self.char_occur(line, '(')[0]+1:self.char_occur(line, ')')[0]].split(',')[0]
-                        first_param_type = pointer_param[self.char_occur(pointer_param, '*')[0] + 1:]
+                        start_poses = self.char_occur(pointer_param, '*')
+                        first_param_type = pointer_param[start_poses[0] + 1 if len(start_poses) > 0 else 0:]
                         func_title = "func (*" + first_param_type + ")" + line[self.char_occur(line, ')')[0]+1:self.char_occur(line, '(')[1]]
                         result_set.append(("function", first_param_type, func_title, line[:self.char_occur(line, '{')[0]-1], comment_queue))
                     else:
@@ -196,14 +200,17 @@ class GoParser:
                     type_struct_set.append(self.second_word(type_set[0]))
                     result_set.append(("type", None, self.second_word(type_set[0]), type_set, comment_queue))
                 elif self.first_word(line) == "import":
-                    import_set = []
-                    j = i + 1
-                    sub_line = lines[j]
-                    while sub_line.strip() != ")":
-                        import_set.append(sub_line.strip())
-                        j += 1
+                    if self.second_word(line) == "(":
+                        import_set = []
+                        j = i + 1
                         sub_line = lines[j]
-                    result_set.append(("imports", None, "Imports", import_set, comment_queue))
+                        while sub_line.strip() != ")":
+                            import_set.append(sub_line.strip())
+                            j += 1
+                            sub_line = lines[j]
+                        result_set.append(("imports", None, "Imports", import_set, comment_queue))
+                    else:
+                        result_set.append(("imports", None, "Imports", [self.second_word(line)], comment_queue))
 
                 comment_queue = []
         return result_set
