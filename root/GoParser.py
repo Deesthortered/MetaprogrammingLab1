@@ -32,20 +32,17 @@ class GoParser:
         middle_data = self.parse_file(input_file)
         input_file.close()
 
-        imports_tokens = list(filter(lambda t: t[0] == "imports", middle_data))
-        all_imports = []
-        for i in imports_tokens:
-            imports_lines = i[3]
-            for j in range(len(imports_lines)):
-                imports_lines[j] = imports_lines[j][1:-1]
-                if len(self.char_occur(imports_lines[j], '/')) > 0:
-                    imports_lines[j] = imports_lines[j][self.char_occur(imports_lines[j], '/')[-1]+1:]
-            all_imports += imports_lines
-
-        for word in all_imports:
-            list_ind = self.find_word_in_file(input_file_path, word)
-            if list_ind:
-                pass
+        for token in middle_data:
+            if token[0] == "imports":
+                for j in range(len(token[3])):
+                    token[3][j] = token[3][j][1:-1]
+                    if len(self.char_occur(token[3][j], '/')) > 0:
+                        token[3][j] = token[3][j][self.char_occur(token[3][j], '/')[-1]+1:]
+                        list_ind = self.find_word_in_file(input_file_path, token[3][j])
+                        if list_ind:
+                            token[3][j] = "\"" + token[3][j] + "\": // Used in next string: " + str(list_ind)
+                        else:
+                            token[3][j] = "\"" + token[3][j] + "\""
 
         output_file = open(destination_file_path, encoding='utf-8', mode='a')
         json_str = json.dumps(middle_data, indent=2)
