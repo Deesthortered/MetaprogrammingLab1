@@ -189,7 +189,14 @@ class GoParser:
                         j = i + 1
                         sub_line = lines[j]
                         while sub_line.strip() != ")":
-                            const_set.append(sub_line.strip())
+                            if sub_line.strip()[:2] == "//":
+                                comment_queue.append(sub_line.strip())
+                            else:
+                                if self.char_occur(sub_line.strip(), '='):
+                                    res_line = sub_line.strip()[:self.char_occur(sub_line.strip(), '=')[0]]
+                                else:
+                                    res_line = sub_line.strip()
+                                const_set.append(res_line)
                             j += 1
                             sub_line = lines[j]
                         result_set.append(("const_arr", None, "Constants", const_set, comment_queue))
@@ -204,7 +211,14 @@ class GoParser:
                         j = i + 1
                         sub_line = lines[j]
                         while sub_line.strip() != ")":
-                            var_set.append(sub_line.strip())
+                            if sub_line.strip()[:2] == "//":
+                                comment_queue.append(sub_line.strip())
+                            else:
+                                if self.char_occur(sub_line.strip(), '='):
+                                    res_line = sub_line.strip()[:self.char_occur(sub_line.strip(), '=')[0]]
+                                else:
+                                    res_line = sub_line.strip()
+                                var_set.append(res_line)
                             j += 1
                             sub_line = lines[j]
                         result_set.append(("variable_arr", None, "Variables", var_set, comment_queue))

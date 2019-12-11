@@ -107,3 +107,4 @@ venv.bak/
 root/result_directory/*
 root/test_files/gogs-master
 root/test_files/bank-vaults-master
+root/test_files/go-project-master
