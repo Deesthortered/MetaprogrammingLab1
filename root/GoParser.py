@@ -56,7 +56,7 @@ class GoParser:
 
         input_file = open(input_file_path, encoding='utf-8', mode='r')
         for i, x in enumerate(input_file, start=1):
-            if x.find(word) != -1:
+            if x.strip()[:2] != "//" and x.find(word) != -1:
                 found_strings.append(i)
 
         input_file.close()
