@@ -180,7 +180,6 @@ class GoParser:
                         line = dirty_line.strip()
                         bracers_count += len(self.char_occur(line, '{'))
                         bracers_count -= len(self.char_occur(line, '}'))
-
                 elif self.first_word(line) == "package":
                     #
                     result_set.append(("package", None, line, line, comment_queue))
@@ -195,7 +194,10 @@ class GoParser:
                             sub_line = lines[j]
                         result_set.append(("const_arr", None, "Constants", const_set, comment_queue))
                     else:
-                        result_set.append(("constant", None, self.second_word(line), line, comment_queue))
+                        if self.char_occur(line, '='):
+                            result_set.append(("constant", None, self.second_word(line), line[:self.char_occur(line, '=')[0]], comment_queue))
+                        else:
+                            result_set.append(("constant", None, self.second_word(line), line, comment_queue))
                 elif self.first_word(line) == "var":
                     if self.second_word(line) == "(":
                         var_set = []
@@ -207,7 +209,10 @@ class GoParser:
                             sub_line = lines[j]
                         result_set.append(("variable_arr", None, "Variables", var_set, comment_queue))
                     else:
-                        result_set.append(("variable", None, self.second_word(line), line, comment_queue))
+                        if self.char_occur(line, '='):
+                            result_set.append(("variable", None, self.second_word(line), line[:self.char_occur(line, '=')[0]], comment_queue))
+                        else:
+                            result_set.append(("variable", None, self.second_word(line), line, comment_queue))
                 elif self.first_word(line) == "type" and line[-1] == "{":
                     type_set = [line]
                     j = i + 1
