@@ -530,22 +530,16 @@ class GoHtmlCreator:
 
     # Main page
     def build_main_page(self, root_name, path_list):
-        project_name = root_name[:1].upper() + root_name[1:]
-        project_version = "v0.01"
-        date_of_generation = date.today()
-        parser_name = "SuperGoDocumenter"
-
+        header_content = self.print_header(root_name)
         ierarchy_code = self.make_ierarchy(root_name, path_list)
         alphabet_code = self.make_alphabet(path_list)
 
-        content = ierarchy_code + alphabet_code
+        content = header_content + ierarchy_code + alphabet_code
         result_code = self.final_envelop(content)
 
         file = open("./" + root_name + "/main.html", encoding='utf-8', mode='w')
         file.write(result_code)
         file.close()
-
-        pass
 
     def make_ierarchy(self, root_path, path_list):
         ierarchy = self.go_dfs_ierarchy(path_list, root_path, 1)
@@ -660,5 +654,31 @@ class GoHtmlCreator:
             cur_content = i[2]
             content += "<h5> <a href=\"{ref}\"> {text} </a> </h5> \n" \
                 .format(ref=cur_ref, text=cur_content)
+
+        return title + before + content + after
+
+    def print_header(self, root_name):
+        project_name = root_name[:1].upper() + root_name[1:]
+        project_version = "v0.01"
+        date_of_generation = date.today()
+        parser_name = "SuperGoDocumenter"
+
+        title = \
+            """ <div class="alert alert-primary" role="alert"> <h2> {name} </h2> </div> \n"""\
+            .format(name=project_name)
+
+        before = \
+            """
+            <div class="alert alert-light" role="alert">\n
+            """
+        after = \
+            """
+            </div>\n
+            """
+
+        content = "<h5> Project version: {version} </h5>\n" \
+                  "<h5> Date of creation: {date} </h5>\n" \
+                  "<h5> Parser: {parser} </h5>\n"\
+            .format(version=project_version, date=date_of_generation, parser=parser_name)
 
         return title + before + content + after
