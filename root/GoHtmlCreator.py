@@ -8,7 +8,7 @@ class GoHtmlCreator:
         for file in path_list:
             if file.split("/")[-1] == "readme.txt.html":
                 self.build_readme(file)
-            elif len(file) >= 3 and file[:-3] == ".go":
+            elif len(file) >= 8 and file[-8:] == ".go.html":
                 self.create_file(file)
 
     def create_file(self, file_path):

@@ -149,7 +149,10 @@ class GoParser:
                         result_set.append(("function", first_param_type, func_title, line[:self.char_occur(line, '{')[0]-1], comment_queue))
                     else:
                         func_title = "func " + self.second_word(line)[:self.char_occur(self.second_word(line), '(')[0]]
-                        result_set.append(("function", None, func_title, line[:self.char_occur(line, '{')[0]-1], comment_queue))
+                        if self.char_occur(line, '{'):
+                            result_set.append(("function", None, func_title, line[:self.char_occur(line, '{')[0]-1], comment_queue))
+                        else:
+                            result_set.append(("function", None, func_title, line[:self.char_occur(line, '(')[0]-1], comment_queue))
 
                     bracers_count = 0
                     bracers_count += len(self.char_occur(line, '{'))
