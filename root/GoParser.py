@@ -42,17 +42,28 @@ class GoParser:
                     imports_lines[j] = imports_lines[j][self.char_occur(imports_lines[j], '/')[-1]+1:]
             all_imports += imports_lines
 
-        if all_imports:
-            pass
-
-        input_file = open(input_file_path, encoding='utf-8', mode='r')
-        input_file.close()
+        for word in all_imports:
+            list_ind = self.find_word_in_file(input_file_path, word)
+            if list_ind:
+                pass
 
         output_file = open(destination_file_path, encoding='utf-8', mode='a')
         json_str = json.dumps(middle_data, indent=2)
         output_file.write(json_str)
         output_file.close()
         pass
+
+    # for modules
+    def find_word_in_file(self, input_file_path, word):
+        found_strings = []
+
+        input_file = open(input_file_path, encoding='utf-8', mode='r')
+        for i, x in enumerate(input_file, start=1):
+            if x.find(word) != -1:
+                found_strings.append(i)
+
+        input_file.close()
+        return found_strings
 
     # Directory handling ##
     def char_occur(self, in_string, char_val):
