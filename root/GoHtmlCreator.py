@@ -543,7 +543,7 @@ class GoHtmlCreator:
         content = header_content + ierarchy_code + alphabet_code
         result_code = self.final_envelop(content)
 
-        file = open("./" + root_name + "/main.html", encoding='utf-8', mode='w')
+        file = open(root_name + "/main.html", encoding='utf-8', mode='w')
         file.write(result_code)
         file.close()
 

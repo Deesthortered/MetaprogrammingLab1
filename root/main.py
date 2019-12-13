@@ -9,6 +9,7 @@ from GoHtmlCreator import GoHtmlCreator
 # python main.py folder ./test_files/bank-vaults-master ./result_directory
 # python main.py folder ./test_files/fyne-master ./result_directory
 # python main.py folder ./test_files/helmfile-master ./result_directory
+# python main.py folder ./test_files/hydra-master ./result_directory
 
 
 def proceed_directory(input_directory, destination_directory):
