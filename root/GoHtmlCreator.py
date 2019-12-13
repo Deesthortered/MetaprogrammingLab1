@@ -548,7 +548,7 @@ class GoHtmlCreator:
         file.close()
 
     def make_ierarchy(self, root_path, path_list):
-        ierarchy = self.go_dfs_ierarchy(path_list, root_path, 1)
+        ierarchy = self.go_dfs_ierarchy(path_list, root_path[self.char_occur(root_path, '/')[-1]+1:], 1)
         code = self.print_ierarchy(ierarchy, True)
         title = \
             """ <div class="alert alert-primary" role="alert"> <h3> Directory ierarchy </h3> </div> \n"""
@@ -663,7 +663,12 @@ class GoHtmlCreator:
 
         return title + before + content + after
 
-    def print_header(self, root_name):
+    def print_header(self, root_name1):
+        root_name = ""
+        if len(self.char_occur(root_name1, '/')) > 0:
+            root_name = root_name1[self.char_occur(root_name1, '/')[-1]+1:]
+        else:
+            root_name = root_name1
         project_name = root_name[:1].upper() + root_name[1:]
         project_version = "v0.01"
         date_of_generation = date.today()
