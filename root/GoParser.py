@@ -163,10 +163,26 @@ class GoParser:
 
                         j = i
                         sub_line = lines[j].strip()
-                        while len(self.char_occur(sub_line, '{')) - len(self.char_occur(sub_line, '}')) == 0:
+                        par_count = len(self.char_occur(sub_line, '(')) - len(self.char_occur(sub_line, ')'))
+                        brac_count = len(self.char_occur(sub_line, '{')) - len(self.char_occur(sub_line, '}'))
+                        while par_count != 0:
                             j += 1
                             sub_line = lines[j].strip()
+                            par_count += len(self.char_occur(sub_line, '(')) - len(self.char_occur(sub_line, ')'))
+                            brac_count += len(self.char_occur(sub_line, '{')) - len(self.char_occur(sub_line, '}'))
                             func_prot += sub_line + "\n"
+                        if brac_count == 0 and len(self.char_occur(sub_line, '{')) == 0:
+                            while (sub_line[0] in (' ', '\n', '\t') or sub_line[:2] == "//") and j < len(lines):
+                                j += 1
+                                if j < len(lines):
+                                    sub_line = lines[j].strip()
+                        if sub_line[0] not in (' ', '\n', '\t') and j < len(lines):
+                            brac_count += len(self.char_occur(sub_line, '{')) - len(self.char_occur(sub_line, '}'))
+                            while brac_count != 0:
+                                func_prot += sub_line + "\n"
+                                j += 1
+                                sub_line = lines[j].strip()
+
                         func_prot += sub_line[:self.char_occur(sub_line, '{')[-1]] + "\n"
 
                         result_set.append(("function", None, func_title, func_prot, comment_queue))
