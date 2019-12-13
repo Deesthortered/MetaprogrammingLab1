@@ -8,6 +8,7 @@ from GoHtmlCreator import GoHtmlCreator
 # python main.py folder ./test_files/testDirectory ./result_directory
 # python main.py folder ./test_files/bank-vaults-master ./result_directory
 # python main.py folder ./test_files/fyne-master ./result_directory
+# python main.py folder ./test_files/helmfile-master ./result_directory
 
 
 def proceed_directory(input_directory, destination_directory):
@@ -61,7 +62,7 @@ if __name__ == "__main__":
         elif sys.argv[1] == "folder":
             if proceed_directory(sys.argv[2], sys.argv[3]):
                 path_list = parser.start_folder(sys.argv[2], sys.argv[3])
-                htmlCreator.create_folder(path_list)
+                htmlCreator.create_folder(path_list, sys.argv[3])
                 print("Done!!!")
         else:
             print("Unknown 2-nd parameter.")

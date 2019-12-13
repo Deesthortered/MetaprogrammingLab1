@@ -3,8 +3,8 @@ from datetime import date
 
 class GoHtmlCreator:
     # Global ##############
-    def create_folder(self, path_list):
-        self.build_main_page(path_list[0].split('/')[1], path_list)
+    def create_folder(self, path_list, root_dest):
+        self.build_main_page(root_dest, path_list)
         for file in path_list:
             if file.split("/")[-1] == "readme.txt.html":
                 self.build_readme(file)

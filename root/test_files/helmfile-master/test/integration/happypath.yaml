@@ -1,0 +1,27 @@
+environments:
+  default:
+    values:
+      - environment.values.yaml
+---
+repositories:
+  - name: stable
+    url: https://kubernetes-charts.storage.googleapis.com/
+  - name: incubator
+    url: https://kubernetes-charts-incubator.storage.googleapis.com
+
+helmDefaults:
+  kubeContext: minikube
+
+releases:
+
+  - name: httpbin
+    chart: ./charts/httpbin
+    set:
+      - name: ingress.enabled
+        value: false
+
+  - name: raw
+    chart: incubator/raw
+    values:
+      - mysecret: {{ .Environment.Values.mysecret }}
+      - values.yaml
