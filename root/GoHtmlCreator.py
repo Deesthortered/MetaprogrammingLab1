@@ -389,7 +389,7 @@ class GoHtmlCreator:
         """
             <style type="text/css">
               div.alert {
-                margin: 15px;
+                margin-left: 15px;
               }
               div.alert-secondary {
                 margin-left: 40px;
@@ -535,21 +535,22 @@ class GoHtmlCreator:
         return title + before + content + after
 
     # Main page
-    def build_main_page(self, root_name, path_list):
-        header_content = self.print_header(root_name)
-        ierarchy_code = self.make_ierarchy(root_name, path_list)
-        alphabet_code = self.make_alphabet(path_list)
+    def build_main_page(self, root_path, path_list):
+        header_content = self.print_header(root_path)
+        ierarchy_code = self.make_ierarchy(root_path, path_list)
+        alphabet_code = self.make_alphabet(path_list, root_path)
 
         content = header_content + ierarchy_code + alphabet_code
         result_code = self.final_envelop(content)
 
-        file = open(root_name + "/main.html", encoding='utf-8', mode='w')
+        file = open(root_path + "/main.html", encoding='utf-8', mode='w')
         file.write(result_code)
         file.close()
 
     def make_ierarchy(self, root_path, path_list):
-        ierarchy = self.go_dfs_ierarchy(path_list, root_path[self.char_occur(root_path, '/')[-1]+1:], 1)
-        code = self.print_ierarchy(ierarchy, True)
+        prefix_ind = len(root_path.split('/')) - 1
+        ierarchy = self.go_dfs_ierarchy(path_list, root_path[self.char_occur(root_path, '/')[-1]+1:], prefix_ind)
+        code = self.print_ierarchy(ierarchy, True, prefix_ind)
         title = \
             """ <div class="alert alert-primary" role="alert"> <h3> Directory ierarchy </h3> </div> \n"""
         return title + code
@@ -575,7 +576,7 @@ class GoHtmlCreator:
             result_d[0].append(sub_res)
 
         return result_d
-    def print_ierarchy(self, cur_ierarchy, tiktok):
+    def print_ierarchy(self, cur_ierarchy, tiktok, depth):
         before = None
         after = None
         if tiktok:
@@ -603,12 +604,12 @@ class GoHtmlCreator:
         after_list = []
         for i in cur_ierarchy[0]:
             if isinstance(i, list):
-                content += self.print_ierarchy(i, not tiktok)
+                content += self.print_ierarchy(i, not tiktok, depth)
             else:
                 after_list.append(i)
 
         for i in after_list:
-            cur_ref = "." + i[self.char_occur(i, '/')[1]:]
+            cur_ref = "." + i[self.char_occur(i, '/')[depth]:]
             cur_content = i[self.char_occur(i, '/')[-1]+1:]
             line = "<p> <a href=\"{ref}\"> {content} </a> </p>\n"\
                 .format(ref=cur_ref, content=cur_content)
@@ -616,7 +617,7 @@ class GoHtmlCreator:
 
         return before + content + after
 
-    def make_alphabet(self, path_list):
+    def make_alphabet(self, path_list, root_path):
         element_list = []
         for file in path_list:
             if len(file) >= 8 and file[-8:] == '.go.html':
@@ -640,9 +641,10 @@ class GoHtmlCreator:
                             if len(self.char_occur(x[2], ' ')) > 0
                             else x[2].casefold())
 
-        return self.print_alphabet(element_list)
+        prefix_ind = len(root_path.split('/')) - 1
+        return self.print_alphabet(element_list, prefix_ind)
 
-    def print_alphabet(self, element_list):
+    def print_alphabet(self, element_list, depth):
         title = \
             """ <div class="alert alert-primary" role="alert"> <h3> Alphabet </h3> </div> \n"""
         before = \
@@ -656,7 +658,7 @@ class GoHtmlCreator:
 
         content = ""
         for i in element_list:
-            cur_ref = "." + i[-1][self.char_occur(i[-1], '/')[1]:]
+            cur_ref = "." + i[-1][self.char_occur(i[-1], '/')[depth]:]
             cur_content = i[2]
             content += "<h5> <a href=\"{ref}\"> {text} </a> </h5> \n" \
                 .format(ref=cur_ref, text=cur_content)

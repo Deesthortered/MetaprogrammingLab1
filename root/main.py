@@ -10,6 +10,8 @@ from GoHtmlCreator import GoHtmlCreator
 # python main.py folder ./test_files/fyne-master ./result_directory
 # python main.py folder ./test_files/helmfile-master ./result_directory
 # python main.py folder ./test_files/hydra-master ./result_directory
+# python main.py folder /media/deesthortered/Data/2.Programming/MetaprogrammingLab1/root/test_files/gogs-master /media/deesthortered/Data/2.Programming/MetaprogrammingLab1/root/result_directory
+# python main.py folder D:/2.Programming/MetaprogrammingLab1/root/test_files/gogs-master D:/2.Programming/MetaprogrammingLab1/root/result_directory
 
 
 def proceed_directory(input_directory, destination_directory):
@@ -50,6 +52,9 @@ def proceed_file(input_file, destination_file):
 if __name__ == "__main__":
     parser = GoParser()
     htmlCreator = GoHtmlCreator()
+
+    sys.argv[2] = sys.argv[2].replace('\\', '/')
+    sys.argv[3] = sys.argv[3].replace('\\', '/')
 
     if len(sys.argv) == 1:
         print("This is the Goland Documentator.")

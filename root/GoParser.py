@@ -4,7 +4,7 @@ import json
 class GoParser:
     # Global
     def start_folder(self, input_folder_path, destination_folder_path):
-        prefix_ind = len(input_folder_path.split('/')) - 1
+        prefix_ind = len(input_folder_path.split('/')) - 2
         os.makedirs(destination_folder_path)
         file_list = self.go_throw_directory(input_folder_path, destination_folder_path, prefix_ind)
 
@@ -67,7 +67,7 @@ class GoParser:
         return [i for i, letter in enumerate(in_string) if letter == char_val]
 
     def go_throw_directory(self, current_path, destination_folder_path, prefix_ind):
-        new_folder_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[1]:]
+        new_folder_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[prefix_ind]:]
         os.makedirs(new_folder_path)
         f = open(new_folder_path + "/readme.txt.html", "a+")
         f.close()
@@ -77,7 +77,7 @@ class GoParser:
         for i in node_list:
             node = current_path + "/" + i
             if os.path.isfile(node) and len(i) >= 3 and i[-3:] == ".go":
-                new_file_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[1]:] + "/" + i + ".html"
+                new_file_path = destination_folder_path + current_path[self.char_occur(current_path, '/')[prefix_ind]:] + "/" + i + ".html"
                 nested_items.append((node, new_file_path))
                 f1 = open(new_file_path, "a+")
                 f1.close()
