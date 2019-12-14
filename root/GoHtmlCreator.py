@@ -295,11 +295,14 @@ class GoHtmlCreator:
         return before + content + after + before1 + content1 + after1
 
     def envelop_type(self, type):
+        anchor = "type_" + type[0][2]
         before_desc = \
             """
-            <div class="alert alert-primary" role="alert"> <h3> type """ + type[0][2] + """ </h3> </div>
+            <div class="alert alert-primary" role="alert" id=\"{anchor_id}\"> <h3> type {type} </h3> </div>
             <div class="alert alert-light" role="alert">
-            """
+            """\
+                .format(anchor_id=anchor, type=type[0][2])
+
         after_desc = \
             """
             </div>
@@ -331,7 +334,8 @@ class GoHtmlCreator:
         return descrition + code + sub_func
 
     def envelop_sub_sunction(self, ptoken):
-        title = """ <div class="alert alert-light" role="alert"> <h3> """ + ptoken[2] + """ </h3> </div> """
+        title = """ <div class="alert alert-light" role="alert" id=\"{anchor_id}\"> <h3> {func_name} </h3> </div> """\
+            .format(func_name=ptoken[2], anchor_id=self.get_func_anchor(ptoken))
 
         before_code = \
             """
@@ -358,7 +362,8 @@ class GoHtmlCreator:
         return title + code + before_desc + desc_content + after_desc
 
     def envelop_function(self, ptoken):
-        title = """ <div class="alert alert-primary" role="alert"> <h3> """ + ptoken[2] + """ </h3> </div> """
+        title = """ <div class="alert alert-primary" role="alert" id=\"{anchor_id}\"> <h3> {func_name} </h3> </div> """\
+            .format(func_name=ptoken[2], anchor_id=self.get_func_anchor(ptoken))
 
         before_code = \
             """
@@ -659,9 +664,17 @@ class GoHtmlCreator:
         content = ""
         for i in element_list:
             cur_ref = "." + i[-1][self.char_occur(i[-1], '/')[depth]:]
-            cur_content = i[2]
-            content += "<h5> <a href=\"{ref}\"> {text} </a> </h5> \n" \
-                .format(ref=cur_ref, text=cur_content)
+            if i[0] == "type":
+                cur_content = "type " + i[2]
+            else:
+                cur_content = i[2]
+
+            if i[0] == 'type':
+                cur_anchor = "type_"+i[2]
+            elif i[0] == 'function':
+                cur_anchor = self.get_func_anchor(i)
+            content += "<h5> <a href=\"{ref}#{anchor}\"> {text} </a> </h5> \n" \
+                .format(ref=cur_ref, anchor=cur_anchor, text=cur_content)
 
         return title + before + content + after
 
@@ -695,3 +708,13 @@ class GoHtmlCreator:
             .format(version=project_version, date=date_of_generation, parser=parser_name)
 
         return title + before + content + after
+
+    def get_func_anchor(self, func_token):
+        res = func_token[3].replace(' ', '_').strip()
+        res = res.replace('(', '_')
+        res = res.replace(')', '_')
+        res = res.replace('*', '_')
+        res = res.replace(',', '_')
+        res = res.replace('.', '_')
+        return res
+
