@@ -60,6 +60,10 @@ if __name__ == "__main__":
 
         sys.argv[2] = sys.argv[2].replace('\\', '/')
         sys.argv[3] = sys.argv[3].replace('\\', '/')
+        if sys.argv[2][-1] == '/':
+            sys.argv[2] = sys.argv[2][:-1]
+        if sys.argv[3][-1] == '/':
+            sys.argv[3] = sys.argv[3][:-1]
 
         if sys.argv[1] == "file":
             if proceed_file(sys.argv[2], sys.argv[3]):
