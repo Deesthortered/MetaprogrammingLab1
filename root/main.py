@@ -53,13 +53,14 @@ if __name__ == "__main__":
     parser = GoParser()
     htmlCreator = GoHtmlCreator()
 
-    sys.argv[2] = sys.argv[2].replace('\\', '/')
-    sys.argv[3] = sys.argv[3].replace('\\', '/')
-
     if len(sys.argv) == 1:
         print("This is the Goland Documentator.")
         print("Please, type \"--help\" for manual of usage.")
     elif len(sys.argv) == 4:
+
+        sys.argv[2] = sys.argv[2].replace('\\', '/')
+        sys.argv[3] = sys.argv[3].replace('\\', '/')
+
         if sys.argv[1] == "file":
             if proceed_file(sys.argv[2], sys.argv[3]):
                 parser.start_file(sys.argv[2], sys.argv[3])
