@@ -12,7 +12,7 @@ from GoHtmlCreator import GoHtmlCreator
 # python main.py folder ./test_files/hydra-master ./result_directory
 # python main.py folder /media/deesthortered/Data/2.Programming/MetaprogrammingLab1/root/test_files/gogs-master /media/deesthortered/Data/2.Programming/MetaprogrammingLab1/root/result_directory
 # python main.py folder D:/2.Programming/MetaprogrammingLab1/root/test_files/gogs-master D:/2.Programming/MetaprogrammingLab1/root/result_directory
-
+# python main.py folder D:/2.Programming/MetaprogrammingLab1/root/test_files/go-master ./result_directory
 
 def proceed_directory(input_directory, destination_directory):
     if os.path.exists(input_directory):
