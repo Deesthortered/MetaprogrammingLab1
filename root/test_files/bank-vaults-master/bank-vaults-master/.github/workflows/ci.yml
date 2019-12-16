@@ -1,0 +1,71 @@
+name: CI
+on: [pull_request]
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+
+    - name: Check out code
+      uses: actions/checkout@v1
+
+    - name: Build
+      run: make check
+
+  acceptance-test:
+    name: Acceptance test
+    runs-on: ubuntu-latest
+    env:
+      KURUN_VERSION: "0.2.5"
+      GIN_MODE: release
+      DOCKER_LATEST: 1
+      VERSION: latest
+
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+
+    - name: Checkout code
+      uses: actions/checkout@v1
+
+    - name: Start kind cluster
+      run: kind create cluster
+
+    - name: Build Docker images
+      run: |
+        make docker
+        make docker-operator
+        make docker-vault-env
+        make docker-webhook
+
+    - name: Load Docker images to kind
+      run: |
+        kind load docker-image banzaicloud/bank-vaults:latest
+        kind load docker-image banzaicloud/vault-operator:latest
+        kind load docker-image banzaicloud/vault-secrets-webhook:latest
+        kind load docker-image banzaicloud/vault-env:latest
+
+    - name: Install socat kubectl, helm and kurun
+      run: |
+        # socat
+        sudo apt install socat
+        # helm
+        export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
+        curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+        helm repo add banzaicloud-stable https://kubernetes-charts.banzaicloud.com/
+        # kurun
+        curl -Lo kurun https://github.com/banzaicloud/kurun/releases/download/${KURUN_VERSION}/kurun-linux-amd64 && chmod +x kurun && sudo mv kurun /usr/local/bin/
+
+    - name: Operator and webhook acceptance test
+      run: |
+        export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
+        hack/acceptance-test.sh

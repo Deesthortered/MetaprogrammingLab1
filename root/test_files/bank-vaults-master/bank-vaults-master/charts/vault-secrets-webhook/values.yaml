@@ -1,0 +1,107 @@
+# Default values for vault-secrets-webhook.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+debug: false
+
+certificate:
+    generate: true
+    server:
+        tls:
+            crt:
+            key:
+    ca:
+        crt:
+image:
+  repository: banzaicloud/vault-secrets-webhook
+  tag: 0.6.3
+  pullPolicy: IfNotPresent
+  imagePullSecrets: []
+
+service:
+  name: vault-secrets-webhook
+  type: ClusterIP
+  externalPort: 443
+  internalPort: 8443
+
+env:
+  VAULT_IMAGE: vault:1.2.3
+  VAULT_ENV_IMAGE: banzaicloud/vault-env:0.6.3
+  # VAULT_CAPATH: /vault/tls
+  # used when the pod that should get secret injected does not specify
+  # an imagePullSecret
+  # DEFAULT_IMAGE_PULL_SECRET:
+  # DEFAULT_IMAGE_PULL_SECRET_NAMESPACE:
+
+metrics:
+  enabled: false
+  port: 8443
+  serviceMonitor:
+    enabled: false
+    scheme: https
+    tlsConfig:
+      insecureSkipVerify: true
+
+volumes: []
+# - name: vault-tls
+#   secret:
+#     secretName: vault-tls
+
+volumeMounts: []
+# - name: vault-tls
+#   mountPath: /vault/tls
+
+podAnnotations: {}
+
+labels: {}
+  #  team: banzai
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+## Assign a PriorityClassName to pods if set
+priorityClassName: ""
+
+rbac:
+  enabled: true
+  psp:
+    enabled: false
+
+# This can cause issues when used with Helm, so it is not enabled by default
+configMapMutation: false
+
+configmapFailurePolicy: Ignore
+
+podsFailurePolicy: Ignore
+
+secretsFailurePolicy: Ignore
+
+apiSideEffectValue: NoneOnDryRun
+
+namespaceSelector:
+  matchExpressions:
+  - key: name
+    operator: NotIn
+    values:
+    - kube-system
+  # matchLabels:
+  #   vault-injection: enabled
+
+# In case of the K8s cluster version is above 1.15 objectSelector is usable
+objectSelector: {}
+  # matchExpressions:
+  # - key: security.banzaicloud.io/mutate
+  #   operator: NotIn
+  #   values:
+  #   - skip
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
