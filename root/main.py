@@ -68,11 +68,13 @@ if __name__ == "__main__":
         if sys.argv[1] == "file":
             if proceed_file(sys.argv[2], sys.argv[3]):
                 parser.start_file(sys.argv[2], sys.argv[3])
+                print("Start build HTML")
                 htmlCreator.create_file(sys.argv[3])
                 print("Done!!!")
         elif sys.argv[1] == "folder":
             if proceed_directory(sys.argv[2], sys.argv[3]):
                 path_list = parser.start_folder(sys.argv[2], sys.argv[3])
+                print("Start build HTML")
                 htmlCreator.create_folder(path_list, sys.argv[3])
                 print("Done!!!")
         else:

@@ -91,9 +91,6 @@ class GoParser:
                 f.write(new_folder_path + "/" + i + "\n")
                 f.close()
                 nested_items = nested_items + nested_files
-            else:
-                print("Node = " + node)
-                print("   This is not *.go file and not \"readme.txt\", so it will be ignored")
         if "readme.txt" not in node_list:
             f = open(new_folder_path + "/readme.txt.html", encoding='utf-8', mode= "a+")
             nested_items.append(("", new_folder_path + "/readme.txt.html"))
@@ -172,11 +169,12 @@ class GoParser:
                             func_prot += sub_line + "\n"
 
                         brac_count = len(self.char_occur(sub_line, '{')) - len(self.char_occur(sub_line, '}'))
-                        while brac_count != 0:
+                        while brac_count != 0 and j < i:
                             j += 1
+                            sub_line = lines[j].strip()
                             brac_count += len(self.char_occur(sub_line, '{')) - len(self.char_occur(sub_line, '}'))
 
-                        i = j - 1
+                        i = j
 
                         result_set.append(("function", first_param_type, func_title, func_prot, comment_queue))
                     else:
@@ -190,23 +188,30 @@ class GoParser:
 
                         j = i
                         sub_line = lines[j].strip()
+                        if len(self.char_occur(sub_line, '#')) > 0:
+                            sub_line = sub_line[:self.char_occur(sub_line, '#')[0]]
                         par_count = len(self.char_occur(sub_line, '(')) - len(self.char_occur(sub_line, ')'))
                         if len(self.char_occur(sub_line, '{')) > 0:
                             func_prot += sub_line[:self.char_occur(sub_line, '{')[-1]] + "\n"
                         else:
                             func_prot += sub_line + "\n"
-                        while par_count != 0:
+                        while par_count != 0 and j < i:
                             j += 1
                             sub_line = lines[j].strip()
+                            if len(self.char_occur(sub_line, '#')) > 0:
+                                sub_line = sub_line[:self.char_occur(sub_line, '#')[0]]
                             par_count += len(self.char_occur(sub_line, '(')) - len(self.char_occur(sub_line, ')'))
                             func_prot += sub_line + "\n"
 
                         brac_count = len(self.char_occur(sub_line, '{')) - len(self.char_occur(sub_line, '}'))
-                        while brac_count != 0:
+                        while brac_count != 0 and j < i:
                             j += 1
+                            sub_line = lines[j].strip()
+                            if len(self.char_occur(sub_line, '#')) > 0:
+                                sub_line = sub_line[:self.char_occur(sub_line, '#')[0]]
                             brac_count += len(self.char_occur(sub_line, '{')) - len(self.char_occur(sub_line, '}'))
 
-                        i = j-1
+                        i = j
 
                         result_set.append(("function", None, func_title, func_prot, comment_queue))
 
@@ -218,7 +223,7 @@ class GoParser:
                         const_set = []
                         j = i + 1
                         sub_line = lines[j]
-                        while sub_line.strip() != ")":
+                        while sub_line.strip() != ")" and j < i:
                             if sub_line.strip()[:2] == "//":
                                 comment_queue.append(sub_line.strip())
                             else:
@@ -241,7 +246,7 @@ class GoParser:
                         var_set = []
                         j = i + 1
                         sub_line = lines[j]
-                        while sub_line.strip() != ")":
+                        while sub_line.strip() != ")" and j < i:
                             if sub_line.strip()[:2] == "//":
                                 comment_queue.append(sub_line.strip())
                             else:
@@ -312,5 +317,7 @@ class GoParser:
         return line.split(' ', 1)[0]
 
     def second_word(self, line):
+        if len(line.split(' ')) < 2:
+            return "____________"
         return line.split(' ')[1]
     #######################
